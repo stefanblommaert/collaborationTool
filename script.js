@@ -15,6 +15,11 @@ app.config(function($routeProvider){
 		templateUrl: 'faq.html',
 		controller: 'FaqController'
 	})
+	.when('/login',{
+		templateUrl: 'login.html'
+	})
+
+	.otherwise({ redirectTo: '/' });
 
 });
 

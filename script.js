@@ -11,6 +11,10 @@ app.config(function($routeProvider){
 		templateUrl: 'member.html',
 		controller: 'MemberController'
 	})
+	.when('/rooms',{
+		templateUrl: 'rooms.html',
+		controller: 'roomController'
+	})
 	.when('/faq',{
 		templateUrl: 'faq.html',
 		controller: 'FaqController'
@@ -45,13 +49,19 @@ app.controller('NavController', function($scope) {
 	$scope.message = 'Everyone come and see how good I look!';
 });
 
-app.controller('MemberController', function($scope, $http){
-	$scope.message = 'It\'s the member page';
+app.controller('MemberController', function($scope) {
+	$scope.message = 'Everyone come and see how good I look!';
+});
+
+app.controller('roomController', function($scope, $http){
+	$scope.message = 'It\'s the room page';
   ///hier wordt popup geswitched !!! ==> 
   	$scope.modalShown = false;
   	$scope.toggleModal = function() {
     $scope.modalShown = !$scope.modalShown;
 	}
+	$scope.roomList = false;
+	$scope.chosenRoom = false;
 	// wat er gebeurd als er^op de knop wordt gedrukt ==>
 	$scope.submit=function(){
 		console.log("submitted"); 
@@ -82,6 +92,7 @@ app.controller('MemberController', function($scope, $http){
 		});	
    	
   };
+
   var roomArr;
 	$scope.getRooms=function(){
 		console.log("geeft rooms");
@@ -95,6 +106,21 @@ app.controller('MemberController', function($scope, $http){
 		.error(function(err) {
 
 		});
+	}
+
+	$scope.geefAlleRooms=function(){
+		$scope.getRooms();
+		$scope.chosenRoom = false;
+		$scope.roomList = true;
+	}
+	$scope.kiesRoom=function(klas, leraar, tittel, code){
+		console.log("da ha" + klas);
+		$scope.roomList = false;
+		$scope.chosenRoom = true;
+		$('#infoRoomK').text("gekozen klas = " + klas);
+		$('#infoRoomL').text("leraar : " + leraar);
+		$('#infoRoomT').text("tittel : " + tittel);
+		$('#infoRoomC').text("code : " + code);
 	}
 });
 

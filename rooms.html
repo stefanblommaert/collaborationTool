@@ -1,0 +1,75 @@
+<div class="jumbotron text-center">
+	<h1>Room Page</h1>
+	<!-- "div" hieronder wordt inhoud popup -->
+	<div>
+	    <button class="btn btn-default" ng-click='toggleModal()'>Open Modal Dialog</button>
+	    <button type="submit" class="btn btn-default" ng-click="geefAlleRooms()">geef rooms</button>
+	    <modal-dialog show='modalShown' width='400px' height='100%'>
+			<div class="container">
+				<div class="col-lg-3 col-sm-12">
+					<h1>add classroom</h1>
+					<form role="form" >
+					<div class="form-group">
+						<label for="artiest">klas: </label>
+						<div>
+							<input type="text" class="form-control" id="klasIN" placeholder="Enter class">
+						</div>					
+					</div>
+					<div class="form-group">
+						<label  for="nummer">leraar: </label>
+						<div>
+							<input type="text" class="form-control" id="leraarIN" placeholder="Enter teacher">
+						</div>					
+					</div>
+					<div class="form-group">
+						<label  for="label">tittel: </label>
+						<div >
+							<input type="text" class="form-control" id="tittelIN" placeholder="Enter title">
+						</div>					
+					</div>
+					<div class="form-group">
+						<label  for="label">code: </label>
+						<div >
+							<input type="text" class="form-control" id="codeIN" placeholder="Enter code">
+						</div>					
+					</div>
+					<div class="form-group">
+						<div >
+							<button type="submit" class="btn btn-default" ng-click="submit()">add</button>
+						</div>
+					</div>					
+					</form>	
+				</div>			
+			</div>
+		</modal-dialog>
+		<div class="tabellen" data-ng-init="getRooms()" ng-show="roomList">
+			<table class="table">
+			    <head>
+			      <tr>
+			        <th>klas</th>
+			        <th>leraar</th>
+			        <th>tittel</th>
+			        <th>code</th>
+			      </tr>
+			    </head>
+			    <body>
+			      <tr ng-repeat-start="x in rooms" ng-click="kiesRoom(x.klas, x.leraar, x.tittel, x.code)">
+			        <td>{{x.klas}}</td>
+			        <td>{{x.leraar}}</a></td>
+			        <td>{{x.tittel}}</a></td>
+			        <td>{{x.code}}</a></td>
+			      </tr>  
+			      <tr ng-repeat-end ></tr>    
+			    </body>
+			</table>
+		</div>
+		<div ng-show="chosenRoom">
+			<p id="infoRoomK"></p>
+			<p id="infoRoomL"></p>
+			<p id="infoRoomT"></p>
+			<p id="infoRoomC"></p>
+			<button class="btn btn-default">join</button>
+		</div>
+    </div>
+	<p>{{ message }}</p>
+</div>

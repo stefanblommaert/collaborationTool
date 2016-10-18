@@ -21,10 +21,12 @@ var rooms = [
 	{ klas : 'test1', leraar : 'test1', tittel : 'test1', code : 'test1'},
 	{ klas : 'test2', leraar : 'test2', tittel : 'test2', code : 'test2'}
 ];
+
 app.get("/getRooms",function(req,res) {
 	res.json(rooms);
 	console.log('rooms werden gestuurd');
 	});
+
 app.post("/form",function(req,res){ 
 	if (req.body.klas == "" || req.body.leraar == "" || req.body.tittel == "" || req.body.code == "") {
 		res.statusCode = 400;

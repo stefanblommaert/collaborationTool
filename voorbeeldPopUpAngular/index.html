@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.js"></script>
+<link rel="stylesheet" type="text/css" href="reset.css">
+<link rel="stylesheet" type="text/css" href="index.css">
+<script src="index.js"></script>
+<meta charset=utf-8 />
+<title>JS Bin</title>
+</head>
+<body ng-app='ModalDemo'>
+  <div ng-controller='MyCtrl'>
+    <button ng-click='toggleModal()'>Open Modal Dialog</button>
+    <modal-dialog show='modalShown' width='400px' height='60%'>
+      <p>Modal Content Goes here<p>
+    </modal-dialog>
+  </div>
+</body>
+</html>

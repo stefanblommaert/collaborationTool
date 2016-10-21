@@ -1,36 +1,20 @@
 {
-<<<<<<< HEAD
   "name": "collaborationtool",
   "version": "1.0.0",
   "description": "Creating MEAN stack application",
   "main": "script.js",
-=======
-  "name": "colabtool",
-  "version": "1.0.0",
-  "description": "Doel van het project:",
-  "main": "express.js",
-  "dependencies": {},
-  "devDependencies": {},
->>>>>>> Room
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-<<<<<<< HEAD
     "url": "git+https://stefanblommaert@github.com/stefanblommaert/collaborationTool.git"
   },
   "author": "Stefan Blommaert & Nick Leus",
-=======
-    "url": "git+https://github.com/stefanblommaert/collaborationTool.git"
-  },
-  "author": "",
->>>>>>> Room
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/stefanblommaert/collaborationTool/issues"
   },
-<<<<<<< HEAD
   "homepage": "https://github.com/stefanblommaert/collaborationTool#readme",
   "dependencies": {
     "body-parser": "^1.15.2",
@@ -44,7 +28,4 @@
   "devDependencies": {
     "bower": "^1.7.9"
   }
-=======
-  "homepage": "https://github.com/stefanblommaert/collaborationTool#readme"
->>>>>>> Room
 }

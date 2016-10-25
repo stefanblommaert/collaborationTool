@@ -16,7 +16,7 @@ app.use(function(req, res, next) {
 
 //MongoDB
 mongoose.Promise = global.Promise; //Geeft de error 'mongoose mpromise is deprecated' niet meer
-mongoose.connect('mongodb://localhost/tool'); //connectie met de DB genaamd 'tool'
+mongoose.connect('mongodb://administrator:administrator@ds048719.mlab.com:48719/tool'); //connectie met de DB genaamd 'tool'
 var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error...'));
@@ -24,21 +24,30 @@ db.once('open', function callback() {
 	console.log('tool db opened');
 });
 
-var messageSchema = mongoose.Schema({message: String});
+/*db.collection('messages').findOne({}, function(err, doc){
+	//print the results
+	console.dir(doc);
+});*/
+
+/*var messageSchema = mongoose.Schema({message: String});
 var Message = mongoose.model('Message', messageSchema);
 var mongoMessage = Message.findOne().exec(function(err, messageDoc) {
-	mongoMessage = messageDoc.message;
-});
+	mongoMessage = messageDoc.messages;
+});*/
 
 
 var path = require("path");
 app.use(express.static('server/views'));
 
+
 app.get("/", function(req,res){
 	res.sendFile( __dirname + "/server/views/" + "navbar.html");
-	mongoMessage: mongoMessage
+	//mongoMessage: mongoMessage
 });
 
+/*app.get("*", function(req,res){ //Als pagina niet bestaat waar je naar routeert, geeft hij een 404 error
+	res.send("Page not found", 404);
+});*/
 
 var rooms = [
 	{ klas : 'test1', leraar : 'test1', tittel : 'test1', code : 'test1'},

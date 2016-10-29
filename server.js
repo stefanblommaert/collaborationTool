@@ -29,12 +29,6 @@ db.once('open', function callback() {
 	console.log('tool db opened');
 });
 
-/*var messageSchema = mongoose.Schema({message: String});
-var Message = mongoose.model('Message', messageSchema);
-var mongoMessage = Message.findOne().exec(function(err, messageDoc) {
-	mongoMessage = messageDoc.messages;
-});*/
-
 
 app.use(express.static('server/views'));
 
@@ -68,25 +62,20 @@ app.post("/form",function(req,res){
 		res.statusCode = 400;
 		return res.send('error 400: post syntax incorrect');
 	} 
-		
-	var newRoom = {
-	klas : req.body.klas,
-	leraar : req.body.leraar,
-	tittel : req.body.tittel,
-	code : req.body.code
-	};
 
-	rooms.push(newRoom);
-	console.log("received booking");
-	console.log(rooms);
-	res.json(true);
+	db.db.collection("Rooms", function(err, collection){
+		collection.save( { //nieuwe room gegevens updaten in collection 'Rooms'
+			klas : req.body.klas,
+			leraar : req.body.leraar,
+			tittel : req.body.tittel,
+			code : req.body.code
+		} )
+		console.log("Room saved to db");
 
-	var stringRooms = JSON.stringify(rooms);
-
-	fs.writeFile('rooms.json', stringRooms, function (err) {
-  	if (err) return console.log(err);
-  	console.log('rooms werd opgeslagen');
 	});
+
+	res.json(true); //status 'true' meegeven als room is gesaved in db
+
 });
 
 

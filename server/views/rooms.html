@@ -68,7 +68,14 @@
 			<p id="infoRoomL"></p>
 			<p id="infoRoomT"></p>
 			<p id="infoRoomC"></p>
-			<button class="btn btn-default">join</button>
+			<p><button class="btn btn-default" ng-click="roomStart()">Start</button>
+			<button ng-show="joinOn" class="btn btn-default" ng-click="roomJoin()">join</button></p>
+		</div>
+		<div ng-show="joinRoom">
+			<p>Joined</p>
+			<p><input type="text" placeholder="vraag"><br>
+			<button class="btn btn-default">Voeg de vraag toe</button></p>
+
 		</div>
     </div>
 	<p>{{ message }}</p>

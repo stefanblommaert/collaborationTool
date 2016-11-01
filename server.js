@@ -4,6 +4,11 @@ var express = require('express'),
 	bodyparser = require('body-parser'),
 	mongoose = require('mongoose'),
 	request = require("request");
+
+var fs = require("fs");
+var path = require("path");
+var http = require("http");
+
 var app = express();
 
 app.use(bodyparser.json());
@@ -24,38 +29,31 @@ db.once('open', function callback() {
 	console.log('tool db opened');
 });
 
-/*db.collection('messages').findOne({}, function(err, doc){
-	//print the results
-	console.dir(doc);
-});*/
 
-/*var messageSchema = mongoose.Schema({message: String});
-var Message = mongoose.model('Message', messageSchema);
-var mongoMessage = Message.findOne().exec(function(err, messageDoc) {
-	mongoMessage = messageDoc.messages;
-});*/
-
-
-var path = require("path");
 app.use(express.static('server/views'));
 
 
 app.get("/", function(req,res){
 	res.sendFile( __dirname + "/server/views/" + "navbar.html");
-	//mongoMessage: mongoMessage
 });
 
 /*app.get("*", function(req,res){ //Als pagina niet bestaat waar je naar routeert, geeft hij een 404 error
 	res.send("Page not found", 404);
 });*/
 
-var rooms = [
-	{ klas : 'test1', leraar : 'test1', tittel : 'test1', code : 'test1'},
-	{ klas : 'test2', leraar : 'test2', tittel : 'test2', code : 'test2'}
-];
+var rooms = ""; //In deze variabele wordt 'data' van de collections 'Rooms' in opgeslagen
 
 app.get("/getRooms",function(req,res) {
-	res.json(rooms);
+
+	db.db.collection("Rooms", function(err, collection){
+        collection.find({}).toArray(function(err, data){
+            console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
+            rooms = data;
+        })
+    });
+
+    res.json(rooms);
+
 	console.log('rooms werden gestuurd');
 	});
 
@@ -64,26 +62,20 @@ app.post("/form",function(req,res){
 		res.statusCode = 400;
 		return res.send('error 400: post syntax incorrect');
 	} 
-		
-	var newRoom = {
-	klas : req.body.klas,
-	leraar : req.body.leraar,
-	tittel : req.body.tittel,
-	code : req.body.code
-	};
 
-	rooms.push(newRoom);
-	console.log("received booking");
-	console.log(rooms);
-	res.json(true);
+	db.db.collection("Rooms", function(err, collection){
+		collection.save( { //nieuwe room gegevens updaten in collection 'Rooms'
+			klas : req.body.klas,
+			leraar : req.body.leraar,
+			tittel : req.body.tittel,
+			code : req.body.code
+		} )
+		console.log("Room saved to db");
 
-	var stringRooms = JSON.stringify(rooms);
-
-	fs = require('fs');
-	fs.writeFile('rooms.txt', stringRooms, function (err) {
-  	if (err) return console.log(err);
-  	console.log('rooms werd opgeslagen');
 	});
+
+	res.json(true); //status 'true' meegeven als room is gesaved in db
+
 });
 
 

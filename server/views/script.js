@@ -61,7 +61,6 @@ app.controller('MemberController', function($scope) {
 });
 
 app.controller('roomController', function($scope, $http){
-	$scope.message = 'It\'s the room page';
   ///hier wordt popup geswitched !!! ==> 
   	$scope.modalShown = false;
   	$scope.toggleModal = function() {
@@ -69,6 +68,9 @@ app.controller('roomController', function($scope, $http){
 	}
 	$scope.roomList = false;
 	$scope.chosenRoom = false;
+	$scope.joinRoom = false;
+	$scope.joinOn = false;
+	$scope.showQuestion = false;
 	// wat er gebeurd als er^op de knop wordt gedrukt ==>
 	$scope.submit=function(){
 		console.log("submitted"); 
@@ -118,16 +120,33 @@ app.controller('roomController', function($scope, $http){
 	$scope.geefAlleRooms=function(){
 		$scope.getRooms();
 		$scope.chosenRoom = false;
+		$scope.joinRoom = false;
+		$scope.joinOn = false;
+		$scope.showQuestion = false;
 		$scope.roomList = true;
 	}
 	$scope.kiesRoom=function(klas, leraar, tittel, code){
 		console.log("da ha" + klas);
 		$scope.roomList = false;
+		$scope.joinRoom = false;
+		$scope.joinOn = false;
+		$scope.showQuestion = false;
 		$scope.chosenRoom = true;
 		$('#infoRoomK').text("gekozen klas = " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
 		$('#infoRoomT').text("tittel : " + tittel);
 		$('#infoRoomC').text("code : " + code);
+	}
+
+	$scope.roomStart=function(){
+		$scope.joinOn = true;
+	}
+	$scope.roomJoin=function(){
+		$scope.joinRoom = true;
+	}
+	$scope.addQuestion=function(){
+		$scope.showQuestion = true;
+		console.log($scope.question);
 	}
 });
 

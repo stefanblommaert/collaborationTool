@@ -1,33 +1,42 @@
-var app = angular.module('collaboration-tool', ['ngRoute']);
+var app = angular.module('collaboration-tool', ['ui.router']);
 
-app.config(function($routeProvider){
+app.config(function($stateProvider, $urlRouterProvider){
 
-	//$locationProvider.html5Mode(true);
-	
-	$routeProvider
-	.when('/home',{
-		templateUrl: 'start.html', //start.html
-		controller: 'NavController'
-	})
-	.when('/member',{
-		templateUrl: 'member.html',
-		controller: 'MemberController'
-	})
-	.when('/rooms',{
-		templateUrl: 'rooms.html',
-		controller: 'roomController'
-	})
-	.when('/faq',{
-		templateUrl: 'faq.html',
-		controller: 'FaqController'
-	})
-	.when('/login',{
-		templateUrl: 'login.html'
-	})
+	$urlRouterProvider.otherwise('/home');
 
-	.otherwise({ redirectTo: '/' });
+	$stateProvider
 
+		.state('/home', {
+            url: '/home',
+            templateUrl: 'start.html',
+            controller: 'NavController'
+        })
+
+        .state('/member', {
+            url: '/member',
+            templateUrl: 'member.html',
+            controller: 'MemberController'
+        })
+
+        .state('/rooms', {
+            url: '/rooms',
+            templateUrl: 'rooms.html',
+            controller: 'roomController'
+        })
+
+        .state('/faq', {
+            url: '/faq',
+            templateUrl: 'faq.html',
+            controller: 'FaqController'
+        })
+
+        .state('/login', {
+            url: '/login',
+            templateUrl: 'login.html'
+        })
 });
+
+
 // maakt popup aan ==>
 app.directive('modalDialog', function() {
   return {

@@ -133,6 +133,8 @@ app.controller('roomController', function($scope, $http){
 		$scope.joinOn = false;
 		$scope.showQuestion = false;
 		$scope.roomList = true;
+
+		$scope.question = ""; //Vraag scope resetten als je uit de room gaat
 	}
 	$scope.kiesRoom=function(klas, leraar, tittel, code){
 		console.log("da ha" + klas);
@@ -155,7 +157,10 @@ app.controller('roomController', function($scope, $http){
 	}
 	$scope.addQuestion=function(){
 		$scope.showQuestion = true;
-		console.log($scope.question);
+		console.log($scope.question1);
+
+		$scope.question = $scope.question1;
+		$scope.question1 = ""; //Wanneer vraag gesteld is, tekstblok resetten
 	}
 });
 

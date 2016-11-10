@@ -80,6 +80,9 @@ app.controller('roomController', function($scope, $http){
 	$scope.joinRoom = false;
 	$scope.joinOn = false;
 	$scope.showQuestion = false;
+	$scope.placeAnswer = false;
+	$scope.showAnswer = false;
+
 	// wat er gebeurd als er^op de knop wordt gedrukt ==>
 	$scope.submit=function(){
 		console.log("submitted"); 
@@ -132,9 +135,12 @@ app.controller('roomController', function($scope, $http){
 		$scope.joinRoom = false;
 		$scope.joinOn = false;
 		$scope.showQuestion = false;
+		$scope.placeAnswer = false;
+		$scope.showAnswer = false;
 		$scope.roomList = true;
 
 		$scope.question = ""; //Vraag scope resetten als je uit de room gaat
+		$scope.answer1 = "";
 	}
 	$scope.kiesRoom=function(klas, leraar, tittel, code){
 		console.log("da ha" + klas);
@@ -142,6 +148,8 @@ app.controller('roomController', function($scope, $http){
 		$scope.joinRoom = false;
 		$scope.joinOn = false;
 		$scope.showQuestion = false;
+		$scope.placeAnswer = false;
+		$scope.showAnswer = false;
 		$scope.chosenRoom = true;
 		$('#infoRoomK').text("gekozen klas = " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
@@ -157,10 +165,18 @@ app.controller('roomController', function($scope, $http){
 	}
 	$scope.addQuestion=function(){
 		$scope.showQuestion = true;
+		$scope.placeAnswer = true;
 		console.log($scope.question1);
 
 		$scope.question = $scope.question1;
 		$scope.question1 = ""; //Wanneer vraag gesteld is, tekstblok resetten
+	}
+
+	$scope.addAnswer=function(){
+		$scope.showAnswer = true;
+
+		$scope.answer = $scope.answer1;
+		$scope.answer1 = "";
 	}
 });
 

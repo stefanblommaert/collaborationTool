@@ -73,12 +73,20 @@
 		</div>
 		<div ng-show="joinRoom">
 			<p>Joined</p>
-			<p><input type="text" placeholder="vraag" ng-model="question" style='display:block;width:500px;margin-left:auto;margin-right:auto'><br>
+			<p><input type="text" placeholder="vraag" ng-model="question1" id="vraagIN" style='display:block;width:500px;margin-left:auto;margin-right:auto'><br>
 			<button class="btn btn-default" ng-click="addQuestion()">Voeg de vraag toe</button></p>
 
 		</div>
 		<div ng-show="showQuestion">
 			<p><input type="text" readonly="true" value="{{ question }}" style='display:block;width:500px;margin-left:auto;margin-right:auto'></p>
+		</div>
+
+		<div ng-show="showAnswer">
+			<p><input type="text" readonly="true" value="{{ answer }}" style='display:block;width:500px;margin-left:auto;margin-right:auto'></p>
+		</div>
+		<div ng-show="placeAnswer">
+			<p><input type="text" placeholder="Antwoord" ng-model="answer1" style='display:block;width:500px;margin-left:auto;margin-right:auto'>
+			<button class="btn btn-default" ng-click="addAnswer()">Antwoord</button></p>
 		</div>
     </div>
 </div>

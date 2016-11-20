@@ -353,6 +353,9 @@ app.controller('roomController', function($scope, $http){
 	$scope.joinRoom = false;
 	$scope.joinOn = false;
 	$scope.showQuestion = false;
+	$scope.placeAnswer = false;
+	$scope.showAnswer = false;
+
 	// wat er gebeurd als er^op de knop wordt gedrukt ==>
 	$scope.submit=function(){
 		console.log("submitted"); 
@@ -405,7 +408,12 @@ app.controller('roomController', function($scope, $http){
 		$scope.joinRoom = false;
 		$scope.joinOn = false;
 		$scope.showQuestion = false;
+		$scope.placeAnswer = false;
+		$scope.showAnswer = false;
 		$scope.roomList = true;
+
+		$scope.question = ""; //Vraag scope resetten als je uit de room gaat
+		$scope.answer1 = "";
 	}
 	$scope.kiesRoom=function(klas, leraar, tittel, code){
 		console.log("da ha" + klas);
@@ -413,11 +421,15 @@ app.controller('roomController', function($scope, $http){
 		$scope.joinRoom = false;
 		$scope.joinOn = false;
 		$scope.showQuestion = false;
+		$scope.placeAnswer = false;
+		$scope.showAnswer = false;
 		$scope.chosenRoom = true;
 		$('#infoRoomK').text("gekozen klas = " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
 		$('#infoRoomT').text("tittel : " + tittel);
 		$('#infoRoomC').text("code : " + code);
+
+		$scope.gekozenKlas = klas;
 	}
 
 	$scope.roomStart=function(){
@@ -426,9 +438,43 @@ app.controller('roomController', function($scope, $http){
 	$scope.roomJoin=function(){
 		$scope.joinRoom = true;
 	}
-	$scope.addQuestion=function(){
+
+	$scope.addQuestion=function(){ 
+		
+		var vraag = $('#vraagIN').val(); //van id 'vraagIN' wordt variabele vraag aangevuld
+		var klasG = $scope.gekozenKlas;
+
 		$scope.showQuestion = true;
-		console.log($scope.question);
+		$scope.placeAnswer = true;
+		console.log(vraag);
+		console.log(klasG);
+
+		$scope.question = $scope.question1;
+
+		addQ = {}
+		addQ ["klas"] = klasG;
+        addQ ["vraag"] = vraag;
+
+		//Stel de vraag en voeg hem toe aan de database in de juiste room
+		$http.post('http://localhost:3000/questionAdd', addQ)
+		.success(function(data, status) {
+			console.log(data);
+			console.log(status);
+
+		})
+		.error(function(err) {
+			//alert(err);
+
+		});	
+
+		$scope.question1 = ""; //Wanneer vraag gesteld is, tekstblok resetten
+	}
+
+	$scope.addAnswer=function(){
+		$scope.showAnswer = true;
+
+		$scope.answer = $scope.answer1;
+		$scope.answer1 = "";
 	}
 });
 

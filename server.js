@@ -78,7 +78,50 @@ app.post("/form",function(req,res){
 
 });
 
+app.post("/register", function(req,res){
+	if (req.body.username == "" || req.body.password == "") {
+		res.statusCode = 400;
+		return res.send('error 400: post syntax incorrect');
+	}
 
+	db.db.collection("Users", function(err, collection){
+		collection.save( { //nieuwe room gegevens updaten in collection 'users'
+			username : req.body.username,
+			password : req.body.password
+			//functie : req.body.functie
+		} )
+		console.log("user saved to db");
+
+	});
+
+	res.json(true); //status 'true' meegeven als room is gesaved in db
+});
+
+app.post("/authenticate",function(req,res){ 
+	db.db.collection("Users", function(err, collection){
+        var user = collection.find({"username": "test "}).toArray(function(err, data){
+        console.log(data); 
+        console.log('gelukt' + data.password);
+        })
+    });
+
+	//console.log(req.body.username);
+	if (req.body.username !== "test" || req.body.password !== "test") {
+		res.json({
+			success: false,
+			message: "Login failed"
+		});
+		res.statusCode = 400;
+		return res.send('error 400: post syntax incorrect');
+	} 
+	else {
+		res.statusCode = 200;
+		res.json({
+			success: true,
+			message: "Login succeeded"
+		});
+	}
+});
 var port = 3000;
 app.listen(port); //connectie via localhost:3000
 console.log('Listening on port ' + port + ' ....');

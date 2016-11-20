@@ -6,34 +6,44 @@ app.config(function($stateProvider, $urlRouterProvider){
 
 	$stateProvider
 
-		.state('/home', {
+		.state('home', {
             url: '/home',
             templateUrl: 'start.html',
             controller: 'NavController'
         })
 
-        .state('/member', {
+        .state('member', {
             url: '/member',
             templateUrl: 'member.html',
             controller: 'MemberController'
         })
 
-        .state('/rooms', {
+        .state('rooms', {
             url: '/rooms',
             templateUrl: 'rooms.html',
-            controller: 'roomController'
+            controller: 'roomController',
+            data: {
+            authorization: true,
+            redirectTo: 'login'
+        }
         })
 
-        .state('/faq', {
+        .state('faq', {
             url: '/faq',
             templateUrl: 'faq.html',
-            controller: 'FaqController'
+            controller: 'FaqController',
+            data: {
+            authorization: true,
+            redirectTo: '/login'
+        }
+
         })
 
-        .state('/login', {
+        .state('login', {
             url: '/login',
             templateUrl: 'login.html',
             controller: 'loginController'
+
         })
 });
 
@@ -69,16 +79,81 @@ app.controller('NavController', function($scope) {
 app.controller('MemberController', function($scope) {
 	$scope.message = 'Everyone come and see how good I look!';
 });
+//var authed = authorization;
+/*app.factory('authFactory', function () {
+    var factory = {};
+    factory.checkAuth = function (emailp) {
+      if (emailp == 'aaa') authed = true;
+      return (authed);
+    };
+
+    factory.isAuthed = function () {
+      return authed;
+    }
+    return factory;
+  });
+*/
+
+app.service('Authorization', function($state) {
+
+  this.authorized = false;
+  this.memorizedState = null;
+
+  var
+  clear = function() {
+    this.authorized = false;
+    this.memorizedState = null;
+  },
+
+  go = function(fallback) {
+    this.authorized = true;
+    var targetState = this.memorizedState ? this.memorizedState : fallback;
+    $state.go(targetState);
+  };
+
+  return {
+    authorized: this.authorized,
+    memorizedState: this.memorizedState,
+    clear: clear,
+    go: go
+  };
+});
+
+app.run(function($rootScope, $state, Authorization) {
+
+  $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+    if (!Authorization.authorized) {
+      if (Authorization.memorizedState && (!_.has(fromState, 'data.redirectTo') || toState.name !== fromState.data.redirectTo)) {
+        Authorization.clear();
+      }
+      if (_.has(toState, 'data.authorization') && _.has(toState, 'data.redirectTo')) {
+        if (_.has(toState, 'data.memory') && toState.data.memory) {
+          Authorization.memorizedState = toState.name;
+        }
+        $state.go(toState.data.redirectTo);
+      }
+    }
+
+  });
+});
+
+/*
+app.run(function ($rootScope, $state, Authorization) {
+    $rootScope.$on('$stateChangeStart', function () {
+      if(Authorization.authorized==true){
+        $state.go('login')
+      }
+    })
+  });*/
 
 app.factory('AuthenticationService',
     ['Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
     function (Base64, $http, $cookieStore, $rootScope, $timeout) {
-        var service = {};
- 
+        var service = {}; 
         service.Login = function (username, password, callback) {
  
             /* Dummy authentication for testing, uses $timeout to simulate api call
-             ----------------------------------------------*/
+             ----------------------------------------------
             $timeout(function(){
                 var response = { success: username === 'test' && password === 'test' };
                 if(!response.success) {
@@ -88,13 +163,16 @@ app.factory('AuthenticationService',
             }, 1000);
  
  
-            /* Use this for real authentication
+            Use this for real authentication
              ----------------------------------------------*/
-            //$http.post('/api/authenticate', { username: username, password: password })
-            //    .success(function (response) {
-            //        callback(response);
-            //    });
- 
+            $http.post('http://localhost:3000/authenticate', { username: username, password: password })
+                .success(function (response) {
+                    callback(response);
+                    console.log('succes');
+                })
+                .error(function(err) {
+                alert(err);
+                });
         };
   
         service.SetCredentials = function (username, password) {
@@ -119,7 +197,8 @@ app.factory('AuthenticationService',
   
         return service;
     }])
-  
+
+
 app.factory('Base64', function () {
     /* jshint ignore:start */
   
@@ -206,9 +285,17 @@ app.factory('Base64', function () {
     /* jshint ignore:end */
 });
 
+/*app.run(function ($rootScope, $state, authFactory) {
+    $rootScope.$on('$stateChangeStart', function () {
+      if(!authFactory.isAuthed()){
+        $state.go('login')
+      }
+    })
+  });
+*/
 app.controller('loginController',
-    ['$scope', '$rootScope', '$location', 'AuthenticationService',
-    function($scope, $rootScope, $location, AuthenticationService) {
+    ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
+    function($scope, $rootScope, $location, AuthenticationService, $state, Authorization, $http) {
         // reset login status
         AuthenticationService.ClearCredentials();
 
@@ -217,13 +304,42 @@ app.controller('loginController',
             AuthenticationService.Login($scope.username, $scope.password, function (response) {
                 if (response.success) {
                     AuthenticationService.SetCredentials($scope.username, $scope.password);
-                    $location.path('/');
+                    Authorization.go('rooms');
+                    console.log(Authorization.authorized);
+                    //$location.path('/');  // bepaald waar we heen gaan indien ingelogd
                 } else {
+                    console.log('mislukt');
                     $scope.error = response.message;
                     $scope.dataLoading = false;
+                    Authorization.clear();
+                    Authorization.authorized = false;
+                    console.log(Authorization.authorized);
                 }
             });
         };
+
+        $scope.register = function() {
+
+            console.log("submitted"); 
+            var username = $('#usernameReg').val();
+            var password = $('#passwordReg').val();
+            //var functie = $('#tittelIN').val();
+            //console.log(code); 
+
+            registerForm = {}
+            registerForm ["username"] = username;
+            registerForm ["password"] = password;
+            //registerForm ["tittel"] = tittel;
+
+            $http.post('http://localhost:3000/register', registerForm)
+            .success(function(data, status) {
+            console.log(data);
+            console.log(status);
+            $('#usernameReg').val('');
+            $('#passwordReg').val('');
+        })
+        }
+
     }]);
 
 app.controller('roomController', function($scope, $http){

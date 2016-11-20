@@ -42,12 +42,13 @@ app.get("/", function(req,res){
 });*/
 
 var rooms = ""; //In deze variabele wordt 'data' van de collections 'Rooms' in opgeslagen
+//var gekozenKlas = "";
 
 app.get("/getRooms",function(req,res) {
 
 	db.db.collection("Rooms", function(err, collection){
         collection.find({}).toArray(function(err, data){
-            console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
+            //console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
             rooms = data;
         })
     });
@@ -76,6 +77,19 @@ app.post("/form",function(req,res){
 
 	res.json(true); //status 'true' meegeven als room is gesaved in db
 
+});
+
+app.post("/questionAdd",function(req,res){
+
+	db.db.collection('Rooms').update( //slaag gestelde vraag op
+	    { klas: req.body.klasG },
+	    { $set: { vraag: req.body.vraag } },
+	    {upsert: true}
+
+	);
+		console.log(req.body.klasG);
+
+		console.log("Question saved to db");
 });
 
 

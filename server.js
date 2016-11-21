@@ -56,7 +56,7 @@ app.get("/getRooms",function(req,res) {
     res.json(rooms);
 
 	console.log('rooms werden gestuurd');
-	});
+});
 
 app.post("/form",function(req,res){ 
 	if (req.body.klas == "" || req.body.leraar == "" || req.body.tittel == "" || req.body.code == "") {
@@ -82,12 +82,12 @@ app.post("/form",function(req,res){
 app.post("/questionAdd",function(req,res){
 
 	db.db.collection('Rooms').update( //slaag gestelde vraag op
-	    { klas: req.body.klasG },
+	    { klas: req.body.klas },
 	    { $set: { vraag: req.body.vraag } },
 	    {upsert: true}
 
 	);
-		console.log(req.body.klasG);
+		console.log(req.body.klas);
 
 		console.log("Question saved to db");
 });
@@ -111,30 +111,42 @@ app.post("/register", function(req,res){
 	res.json(true); //status 'true' meegeven als room is gesaved in db
 });
 
+var myDocument = "";
+var myPassword = "";
+
 app.post("/authenticate",function(req,res){ 
 	db.db.collection("Users", function(err, collection){
-        var user = collection.find({"username": "test "}).toArray(function(err, data){
-        console.log(data); 
-        console.log('gelukt' + data.password);
-        })
+        myDocument = collection.findOne({"username": "test "});
+
+        if (myDocument) {
+			myDocument.then(function(result){
+				console.log(result.password);
+				myPassword = result.password;
+
+				
+				if (req.body.username !== "test" || req.body.password !== "test") {
+					res.json({
+						success: false,
+						message: "Login failed"
+					});
+					res.statusCode = 400;
+					return res.send('error 400: post syntax incorrect');
+				} 
+				else {
+					res.statusCode = 200;
+					res.json({
+						success: true,
+						message: "Login succeeded"
+					});
+					console.log(myPassword);
+				}
+					
+			})
+        
+        }
     });
 
-	//console.log(req.body.username);
-	if (req.body.username !== "test" || req.body.password !== "test") {
-		res.json({
-			success: false,
-			message: "Login failed"
-		});
-		res.statusCode = 400;
-		return res.send('error 400: post syntax incorrect');
-	} 
-	else {
-		res.statusCode = 200;
-		res.json({
-			success: true,
-			message: "Login succeeded"
-		});
-	}
+	
 });
 var port = 3000;
 app.listen(port); //connectie via localhost:3000

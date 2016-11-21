@@ -22,21 +22,6 @@ app.config(function($stateProvider, $urlRouterProvider){
             url: '/rooms',
             templateUrl: 'rooms.html',
             controller: 'roomController',
-            data: {
-            authorization: true,
-            redirectTo: 'login'
-        }
-        })
-
-        .state('faq', {
-            url: '/faq',
-            templateUrl: 'faq.html',
-            controller: 'FaqController',
-            data: {
-            authorization: true,
-            redirectTo: '/login'
-        }
-
         })
 
         .state('login', {
@@ -168,7 +153,7 @@ app.factory('AuthenticationService',
             $http.post('http://localhost:3000/authenticate', { username: username, password: password })
                 .success(function (response) {
                     callback(response);
-                    console.log('succes');
+                    console.log('send to server');
                 })
                 .error(function(err) {
                 alert(err);
@@ -293,6 +278,9 @@ app.factory('Base64', function () {
     })
   });
 */
+
+var author;
+
 app.controller('loginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
     function($scope, $rootScope, $location, AuthenticationService, $state, Authorization, $http) {
@@ -306,6 +294,7 @@ app.controller('loginController',
                     AuthenticationService.SetCredentials($scope.username, $scope.password);
                     Authorization.go('rooms');
                     console.log(Authorization.authorized);
+                    author = Authorization.authorized;
                     //$location.path('/');  // bepaald waar we heen gaan indien ingelogd
                 } else {
                     console.log('mislukt');
@@ -430,6 +419,7 @@ app.controller('roomController', function($scope, $http){
 		$('#infoRoomC').text("code : " + code);
 
 		$scope.gekozenKlas = klas;
+		console.log(klas);
 	}
 
 	$scope.roomStart=function(){
@@ -448,6 +438,7 @@ app.controller('roomController', function($scope, $http){
 		$scope.placeAnswer = true;
 		console.log(vraag);
 		console.log(klasG);
+		console.log($scope.gekozenKlas);
 
 		$scope.question = $scope.question1;
 

@@ -116,7 +116,8 @@ var myPassword = "";
 
 app.post("/authenticate",function(req,res){ 
 	db.db.collection("Users", function(err, collection){
-        myDocument = collection.findOne({"username": "test "});
+		//console.log(req.body.username);
+        myDocument = collection.findOne({"username": req.body.username});
 
         if (myDocument) {
 			myDocument.then(function(result){
@@ -124,7 +125,7 @@ app.post("/authenticate",function(req,res){
 				myPassword = result.password;
 
 				
-				if (req.body.username !== "test" || req.body.password !== "test") {
+				if (req.body.password !== myPassword) {
 					res.json({
 						success: false,
 						message: "Login failed"

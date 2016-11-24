@@ -2,32 +2,36 @@ var app = angular.module('collaboration-tool', ['ui.router', 'ngCookies']);
 
 app.config(function($stateProvider, $urlRouterProvider){
 
-	$urlRouterProvider.otherwise('/home');
+	$urlRouterProvider.otherwise('/home'); //Als URL niet wordt gevonden, ga naar home pagina
 
 	$stateProvider
 
 		.state('home', {
             url: '/home',
             templateUrl: 'start.html',
-            controller: 'NavController'
+            controller: 'NavController',
+            authenticate: false
         })
 
         .state('member', {
             url: '/member',
             templateUrl: 'member.html',
-            controller: 'MemberController'
+            controller: 'MemberController',
+            authenticate: true
         })
 
         .state('rooms', {
             url: '/rooms',
             templateUrl: 'rooms.html',
             controller: 'roomController',
+            authenticate: true
         })
 
         .state('login', {
             url: '/login',
             templateUrl: 'login.html',
-            controller: 'loginController'
+            controller: 'loginController',
+            authenticate: false
 
         })
 });
@@ -86,12 +90,12 @@ app.service('Authorization', function($state) {
 
   var
   clear = function() {
-    this.authorized = false;
+    //this.authorized = false;
     this.memorizedState = null;
   },
 
   go = function(fallback) {
-    this.authorized = true;
+    //this.authorized = true;
     var targetState = this.memorizedState ? this.memorizedState : fallback;
     $state.go(targetState);
   };
@@ -104,32 +108,16 @@ app.service('Authorization', function($state) {
   };
 });
 
-app.run(function($rootScope, $state, Authorization) {
 
-  $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-    if (!Authorization.authorized) {
-      if (Authorization.memorizedState && (!_.has(fromState, 'data.redirectTo') || toState.name !== fromState.data.redirectTo)) {
-        Authorization.clear();
-      }
-      if (_.has(toState, 'data.authorization') && _.has(toState, 'data.redirectTo')) {
-        if (_.has(toState, 'data.memory') && toState.data.memory) {
-          Authorization.memorizedState = toState.name;
-        }
-        $state.go(toState.data.redirectTo);
-      }
-    }
-
-  });
-});
-
-/*
 app.run(function ($rootScope, $state, Authorization) {
-    $rootScope.$on('$stateChangeStart', function () {
-      if(Authorization.authorized==true){
-        $state.go('login')
-      }
-    })
-  });*/
+	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams){
+    	if (toState.authenticate && !Authorization.authorized) {
+    		//User isn't authenticated
+    		$state.transitionTo("login");
+    		event.preventDefault();
+    	} 
+	});
+  });
 
 app.factory('AuthenticationService',
     ['Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
@@ -270,17 +258,6 @@ app.factory('Base64', function () {
     /* jshint ignore:end */
 });
 
-/*app.run(function ($rootScope, $state, authFactory) {
-    $rootScope.$on('$stateChangeStart', function () {
-      if(!authFactory.isAuthed()){
-        $state.go('login')
-      }
-    })
-  });
-*/
-
-var author;
-
 app.controller('loginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
     function($scope, $rootScope, $location, AuthenticationService, $state, Authorization, $http) {
@@ -292,10 +269,9 @@ app.controller('loginController',
             AuthenticationService.Login($scope.username, $scope.password, function (response) {
                 if (response.success) {
                     AuthenticationService.SetCredentials($scope.username, $scope.password);
+                    Authorization.authorized = true;
                     Authorization.go('rooms');
                     console.log(Authorization.authorized);
-                    author = Authorization.authorized;
-                    //$location.path('/');  // bepaald waar we heen gaan indien ingelogd
                 } else {
                     console.log('mislukt');
                     $scope.error = response.message;
@@ -306,6 +282,12 @@ app.controller('loginController',
                 }
             });
         };
+
+        $rootScope.logout = function() {
+		    Authorization.clear();
+		    Authorization.authorized = false;
+		    $state.go('home');
+		};
 
         $scope.register = function() {
 

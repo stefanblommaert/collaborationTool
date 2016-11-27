@@ -21,6 +21,10 @@ app.config(function($stateProvider, $urlRouterProvider){
         .state('rooms', {
             url: '/rooms',
             templateUrl: 'rooms.html',
+            data: {
+            authorization: true,
+            redirectTo: 'login'
+            },
             controller: 'roomController',
         })
 
@@ -120,6 +124,10 @@ app.run(function($rootScope, $state, Authorization) {
     }
 
   });
+  $rootScope.onLogout = function() {
+    Authorization.clear();
+    $state.go('home');
+  };
 });
 
 /*
@@ -279,7 +287,7 @@ app.factory('Base64', function () {
   });
 */
 
-var author;
+//var author;
 
 app.controller('loginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
@@ -294,7 +302,7 @@ app.controller('loginController',
                     AuthenticationService.SetCredentials($scope.username, $scope.password);
                     Authorization.go('rooms');
                     console.log(Authorization.authorized);
-                    author = Authorization.authorized;
+                    //author = Authorization.authorized;
                     //$location.path('/');  // bepaald waar we heen gaan indien ingelogd
                 } else {
                     console.log('mislukt');

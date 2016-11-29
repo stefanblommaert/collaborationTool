@@ -125,7 +125,8 @@ app.post("/authenticate",function(req,res){
 				myPassword = result.password;
 
 				
-				if (req.body.password !== myPassword) {
+				if (req.body.password !== myPassword ) {
+					console.log('400');
 					res.json({
 						success: false,
 						message: "Login failed"
@@ -134,6 +135,7 @@ app.post("/authenticate",function(req,res){
 					return res.send('error 400: post syntax incorrect');
 				} 
 				else {
+					console.log('200');
 					res.statusCode = 200;
 					res.json({
 						success: true,

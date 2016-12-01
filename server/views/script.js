@@ -36,6 +36,8 @@ app.config(function($stateProvider, $urlRouterProvider){
         })
 });
 
+var teacherVar = false;
+var studentVar = false;
 
 // maakt popup aan ==>
 app.directive('modalDialog', function() {
@@ -266,9 +268,6 @@ app.controller('loginController',
         // reset login status
         AuthenticationService.ClearCredentials();
 
-        $scope.teacher = false;
-	    $scope.student = false;
-
         $scope.login = function () {
             $scope.dataLoading = true;
             AuthenticationService.Login($scope.username, $scope.password, $scope.userRole, function (response) {
@@ -277,21 +276,16 @@ app.controller('loginController',
                     Authorization.authorized = true;
 
                     	if ($scope.userRole == "teacher") {
-                    		debugger;
-                    		$scope.teacherRole = function(){
-                    			$scope.teacher = true;
-	                    		$scope.student = false;
-	                    		console.log($scope.userRole + " success");
-	                    		Authorization.go('rooms');
-                    		}                  		
+                            teacherVar = true;
+                            studentVar = false;
+	                    	console.log($scope.userRole + " success");    
+                            Authorization.go('rooms');           		
                     	}
                     	else if ($scope.userRole == "student") {
-                    		$scope.studentRole = function(){
-                    			$scope.student = true;
-	                    		$scope.teacher = false;
-	                    		console.log($scope.userRole + " success");
-	                    		Authorization.go('rooms');
-                    		}   
+                            teacherVar = false;
+                            studentVar = true;
+	                    	console.log($scope.userRole + " success");
+                            Authorization.go('rooms');
                     	}
                     	else{
                     		console.log("Wrong role");
@@ -348,6 +342,16 @@ app.controller('roomController', function($scope, $http){
   	$scope.toggleModal = function() {
     $scope.modalShown = !$scope.modalShown;
 	}
+    if (teacherVar == true) {
+        console.log("hij  wet da ge nen teacehr zet");
+        $scope.teacher=true;
+        $scope.student=false;
+        console.log($scope.teacher);
+    }
+    else if (studentVar == true) {
+        $scope.teacher=false;
+        $scope.student=true;
+    }
 	$scope.roomList = false;
 	$scope.chosenRoom = false;
 	$scope.joinRoom = false;

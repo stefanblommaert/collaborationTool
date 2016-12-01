@@ -125,7 +125,7 @@ app.post("/authenticate",function(req,res){
 				myPassword = result.password;
 
 				
-				if (req.body.password !== myPassword ) {
+				if (req.body.password !== myPassword) { //user role moet hier nog bijkomen
 					console.log('400');
 					res.json({
 						success: false,

@@ -123,7 +123,7 @@ app.factory('AuthenticationService',
     ['Base64', '$http', '$cookieStore', '$rootScope', '$timeout',
     function (Base64, $http, $cookieStore, $rootScope, $timeout) {
         var service = {}; 
-        service.Login = function (username, password, callback) {
+        service.Login = function (username, password, userRole, callback) {
  
             /* Dummy authentication for testing, uses $timeout to simulate api call
              ----------------------------------------------
@@ -138,7 +138,7 @@ app.factory('AuthenticationService',
  
             Use this for real authentication
              ----------------------------------------------*/
-            $http.post('http://localhost:3000/authenticate', { username: username, password: password })
+            $http.post('http://localhost:3000/authenticate', { username: username, password: password, userRole: userRole })
                 .success(function (response) {
                     callback(response);
                     console.log('send to server');
@@ -148,12 +148,13 @@ app.factory('AuthenticationService',
                 });
         };
   
-        service.SetCredentials = function (username, password) {
+        service.SetCredentials = function (username, password, userRole) {
             var authdata = Base64.encode(username + ':' + password);
   
             $rootScope.globals = {
                 currentUser: {
                     username: username,
+                    userRole: userRole,
                     authdata: authdata
                 }
             };
@@ -258,20 +259,48 @@ app.factory('Base64', function () {
     /* jshint ignore:end */
 });
 
+
 app.controller('loginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
     function($scope, $rootScope, $location, AuthenticationService, $state, Authorization, $http) {
         // reset login status
         AuthenticationService.ClearCredentials();
 
+        $scope.teacher = false;
+	    $scope.student = false;
+
         $scope.login = function () {
             $scope.dataLoading = true;
-            AuthenticationService.Login($scope.username, $scope.password, function (response) {
+            AuthenticationService.Login($scope.username, $scope.password, $scope.userRole, function (response) {
                 if (response.success) {
-                    AuthenticationService.SetCredentials($scope.username, $scope.password);
+                    AuthenticationService.SetCredentials($scope.username, $scope.password, $scope.userRole);
                     Authorization.authorized = true;
-                    Authorization.go('rooms');
-                    console.log(Authorization.authorized);
+
+                    	if ($scope.userRole == "teacher") {
+                    		debugger;
+                    		$scope.teacherRole = function(){
+                    			$scope.teacher = true;
+	                    		$scope.student = false;
+	                    		console.log($scope.userRole + " success");
+	                    		Authorization.go('rooms');
+                    		}                  		
+                    	}
+                    	else if ($scope.userRole == "student") {
+                    		$scope.studentRole = function(){
+                    			$scope.student = true;
+	                    		$scope.teacher = false;
+	                    		console.log($scope.userRole + " success");
+	                    		Authorization.go('rooms');
+                    		}   
+                    	}
+                    	else{
+                    		console.log("Wrong role");
+                    		$scope.error = response.message;
+		                    $scope.dataLoading = false;
+		                    Authorization.clear();
+		                    Authorization.authorized = false;
+                    	}
+                    
                 } else {
                     console.log('mislukt');
                     $scope.error = response.message;

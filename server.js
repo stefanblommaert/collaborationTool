@@ -58,6 +58,20 @@ app.get("/getRooms",function(req,res) {
 	console.log('rooms werden gestuurd');
 });
 
+app.get("/getClass",function(req,res) {
+	db.db.collection("stellingen", function(err, collection){
+        collection.find({}).toArray(function(err, data){
+            //console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
+            classes = data;
+            console.log(classes);
+            res.json(classes);
+			console.log('klassen werden gestuurd');
+        })
+    });
+
+    
+});
+
 app.post("/form",function(req,res){ 
 	if (req.body.klas == "" || req.body.leraar == "" || req.body.tittel == "" || req.body.code == "") {
 		res.statusCode = 400;
@@ -84,38 +98,26 @@ app.post("/form",function(req,res){
     stelling ["antwoord"] = []; 
 
 app.post("/addQn",function(req,res){
-	//console.log(req.body.klas, req.body.vraag);
 	stelling ["klas"] = req.body.klas;
     stelling ["vraag"] = req.body.vraag;
-    //console.log(stelling);
 });
 
 app.post("/addAr",function(req,res){
-	//console.log(req.body.antwoord);
 	stelling ["antwoord"].push(req.body.antwoord);
-	//console.log(stelling);
 });
 
 app.post("/questionAdd",function(req,res){
-	//console.log(req.body.klas, req.body.antwoord);
 	console.log(stelling);
 	db.db.collection('stellingen').save({
 		klas : stelling ["klas"],
 		vraag : stelling ["vraag"],
 		antwoord : stelling ["antwoord"]
 		}); 
+
 		stelling ["klas"] ="";
     	stelling ["vraag"] = "";
     	stelling ["antwoord"] = [];
-		//slaag gestelde vraag op
-		
-	    /*{ klas: req.body.klas },
-	    {$set: { vraag: req.body.vraag}},
-	    {$set: { antwoord: req.body.antwoord}},
-	    {upsert: true}*/
 
-	
-		//console.log(stelling ["klas"]);
 		console.log("Question saved to db");
 		res.json(true);
 });

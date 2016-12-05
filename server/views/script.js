@@ -1,5 +1,22 @@
 var app = angular.module('collaboration-tool', ['ui.router', 'ngCookies']);
 
+app.filter('unique', function() {
+   return function(collection, keyname) {
+      var output = [], 
+          keys = [];
+
+      angular.forEach(collection, function(item) {
+          var key = item[keyname];
+          if(keys.indexOf(key) === -1) {
+              keys.push(key);
+              output.push(item);
+          }
+      });
+
+      return output;
+   };
+});
+
 app.config(function($stateProvider, $urlRouterProvider){
 
 	$urlRouterProvider.otherwise('/home'); //Als URL niet wordt gevonden, ga naar home pagina
@@ -67,23 +84,25 @@ app.controller('NavController', function($scope) {
 	$scope.message = 'Everyone come and see how good I look!';
 });
 
-app.controller('MemberController', function($scope) {
+app.controller('MemberController', function($scope, $http, $window) {
 	$scope.message = 'Everyone come and see how good I look!';
-});
-//var authed = authorization;
-/*app.factory('authFactory', function () {
-    var factory = {};
-    factory.checkAuth = function (emailp) {
-      if (emailp == 'aaa') authed = true;
-      return (authed);
-    };
 
-    factory.isAuthed = function () {
-      return authed;
+    var classArr;
+    $scope.geefKlassen=function(){
+        console.log("geeft klassen");
+        //$window.location.reload();  zorgt voor refresh !!! maar eerst fixe dat login ingelogd blijft bij page refresh !!!!
+        $http.get("http://localhost:3000/getClass")
+        .success(function(classes){
+            
+            $scope.classes= classes;            
+            classArr = classes;
+            console.log(classes);
+        })
+        .error(function(err) {
+
+        });
     }
-    return factory;
-  });
-*/
+});
 
 app.service('Authorization', function($state) {
 

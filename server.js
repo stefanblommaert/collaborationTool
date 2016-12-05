@@ -42,7 +42,6 @@ app.get("/", function(req,res){
 });*/
 
 var rooms = ""; //In deze variabele wordt 'data' van de collections 'Rooms' in opgeslagen
-//var gekozenKlas = "";
 
 app.get("/getRooms",function(req,res) {
 
@@ -56,6 +55,20 @@ app.get("/getRooms",function(req,res) {
     res.json(rooms);
 
 	console.log('rooms werden gestuurd');
+});
+
+app.get("/getClass",function(req,res) {
+	db.db.collection("stellingen", function(err, collection){
+        collection.find({}).toArray(function(err, data){
+            //console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
+            classes = data;
+            console.log(classes);
+            res.json(classes);
+			console.log('klassen werden gestuurd');
+        })
+    });
+
+    
 });
 
 app.post("/form",function(req,res){ 
@@ -79,18 +92,62 @@ app.post("/form",function(req,res){
 
 });
 
+var roomOn = false;
+var roomStarted = false;
+app.post("/roomStarted", function(req,res){
+	
+		roomOn = true;
+		console.log("Room is gestart??" + roomOn);
+
+		res.json(roomOn);
+	
+});
+
+app.get("/isRoomStarted", function(req,res){
+	
+		if (roomOn) {
+			roomStarted = true;
+		}
+		else{
+			roomStarted = false;
+		}
+
+		console.log("isRoomStarted: " + roomStarted);
+
+		res.json(roomStarted);
+	
+});
+
+	stelling = {}
+    stelling ["klas"] ="";
+    stelling ["vraag"] = "";
+    stelling ["antwoord"] = []; 
+
+app.post("/addQn",function(req,res){
+	stelling ["klas"] = req.body.klas;
+    stelling ["vraag"] = req.body.vraag;
+});
+
+app.post("/addAr",function(req,res){
+	stelling ["antwoord"].push(req.body.antwoord);
+});
+
 app.post("/questionAdd",function(req,res){
+	console.log(stelling);
+	db.db.collection('stellingen').save({
+		klas : stelling ["klas"],
+		vraag : stelling ["vraag"],
+		antwoord : stelling ["antwoord"]
+		}); 
 
-	db.db.collection('Rooms').update( //slaag gestelde vraag op
-	    { klas: req.body.klas },
-	    { $set: { vraag: req.body.vraag } },
-	    {upsert: true}
-
-	);
-		console.log(req.body.klas);
+		stelling ["klas"] ="";
+    	stelling ["vraag"] = "";
+    	stelling ["antwoord"] = [];
 
 		console.log("Question saved to db");
+		res.json(true);
 });
+
 
 app.post("/register", function(req,res){
 	if (req.body.username == "" || req.body.password == "") {
@@ -125,7 +182,7 @@ app.post("/authenticate",function(req,res){
 				myPassword = result.password;
 
 				
-				if (req.body.password !== myPassword ) {
+				if (req.body.password !== myPassword) { //user role moet hier nog bijkomen
 					console.log('400');
 					res.json({
 						success: false,

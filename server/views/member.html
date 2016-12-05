@@ -1,4 +1,20 @@
 <div class="jumbotron text-center">
 	<h1>Member Page</h1>
 	<p>{{ message }}</p>
+	<button class="btn btn-default" ng-click='geefKlassen()'>mijn klassen</button>
+	<div class="tabellen">
+			<table class="table">
+			    <head>
+			      <tr>
+			        <th>klas</th>
+			      </tr>
+			    </head>
+			    <body>
+			      <tr ng-repeat-start="x in classes | unique:'klas' " >
+			        <td>{{x.klas}}</td>
+			      </tr>  
+			      <tr ng-repeat-end ></tr>    
+			    </body>
+			</table>
+		</div>
 </div>

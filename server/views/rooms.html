@@ -75,6 +75,7 @@
 			<p>Joined</p>
 			<p><input type="text" placeholder="vraag" ng-model="question1" id="vraagIN" style='display:block;width:500px;margin-left:auto' ng-show="teacher">
 			<button class="btn btn-default" ng-click="addQuestion()" style="position: absolute; right: 0;" ng-show="teacher">Voeg de vraag toe</button></p>
+			<button class="btn btn-default" ng-click="stopQuestion()" style="position: absolute; right: 10;" ng-show="teacher">stop stelling</button></p>
 
 		</div>
 		<div ng-show="showQuestion">
@@ -83,7 +84,7 @@
 		</div>
 
 		<div ng-show="showAnswer">
-			<p><input type="text" readonly="true" value="'Student' antwoorde: " style="position: absolute; left: 0; width: 200px;"></p></br></br>
+			<p><input type="text" readonly="true" value="{{naamStudent}} antwoorde: " style="position: absolute; left: 0; width: 200px;"></p></br></br>
 			<p><input type="text" readonly="true" value="{{ answer }}" style='display:block;width:500px;margin-right:auto'></p>
 		</div>
 		<div ng-show="placeAnswer">

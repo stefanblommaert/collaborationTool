@@ -1,5 +1,22 @@
 var app = angular.module('collaboration-tool', ['ui.router', 'ngCookies']);
 
+app.filter('unique', function() {
+   return function(collection, keyname) {
+      var output = [], 
+          keys = [];
+
+      angular.forEach(collection, function(item) {
+          var key = item[keyname];
+          if(keys.indexOf(key) === -1) {
+              keys.push(key);
+              output.push(item);
+          }
+      });
+
+      return output;
+   };
+});
+
 app.config(function($stateProvider, $urlRouterProvider){
 
 	$urlRouterProvider.otherwise('/home'); //Als URL niet wordt gevonden, ga naar home pagina
@@ -67,10 +84,25 @@ app.controller('NavController', function($scope) {
 	$scope.message = 'Everyone come and see how good I look!';
 });
 
-app.controller('MemberController', function($scope) {
+app.controller('MemberController', function($scope, $http, $window) {
 	$scope.message = 'Everyone come and see how good I look!';
-});
 
+    var classArr;
+    $scope.geefKlassen=function(){
+        console.log("geeft klassen");
+        //$window.location.reload();  zorgt voor refresh !!! maar eerst fixe dat login ingelogd blijft bij page refresh !!!!
+        $http.get("http://localhost:3000/getClass")
+        .success(function(classes){
+            
+            $scope.classes= classes;            
+            classArr = classes;
+            console.log(classes);
+        })
+        .error(function(err) {
+
+        });
+    }
+});
 
 app.service('Authorization', function($state) {
 
@@ -248,7 +280,7 @@ app.factory('Base64', function () {
     /* jshint ignore:end */
 });
 
-
+var usernameVar;
 app.controller('loginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
     function($scope, $rootScope, $location, AuthenticationService, $state, Authorization, $http) {
@@ -262,8 +294,7 @@ app.controller('loginController',
                     AuthenticationService.SetCredentials($scope.username, $scope.password, $scope.userRole);
                     Authorization.authorized = true;
 
-                    	//Wanneer login juist is, dan wordt de controle op userrole ingevoerd
-                    	if ($scope.userRole == "teacher") { 
+                    	if ($scope.userRole == "teacher") {
                             teacherVar = true;
                             studentVar = false;
 	                    	console.log($scope.userRole + " success");    
@@ -347,6 +378,8 @@ app.controller('roomController', function($scope, $http){
 	$scope.showAnswer = false; //Wanneer een antwoord wordt toegevoegd, is dit antwoord te zien onder de vraag 
 
 	$scope.roomOn = false; //Wanneer de 'teacher' een room start, wordt via de server aan deze scope true meegegeven
+
+    $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 
 	var init = function(){ //Wanneer room pagina wordt herladen, gaat deze functie via de server de status van roomOn ophalen (true of false)
 		console.log("Init roomController");
@@ -467,7 +500,11 @@ app.controller('roomController', function($scope, $http){
 	$scope.roomJoin=function(){
 		$scope.joinRoom = true;
 	}
-
+    /*
+    stelling = {}
+    stelling ["klas"] ="";
+    stelling ["vraag"] = "";
+    stelling ["antwoord"] = [];   */
 	$scope.addQuestion=function(){ 
 		
 		var vraag = $('#vraagIN').val(); //van id 'vraagIN' wordt variabele vraag aangevuld
@@ -481,12 +518,12 @@ app.controller('roomController', function($scope, $http){
 
 		$scope.question = $scope.question1;
 
-		addQ = {}
+        addQ = {}
 		addQ ["klas"] = klasG;
         addQ ["vraag"] = vraag;
 
 		//Stel de vraag en voeg hem toe aan de database in de juiste room
-		$http.post('http://localhost:3000/questionAdd', addQ)
+		$http.post('http://localhost:3000/addQn', addQ)
 		.success(function(data, status) {
 			console.log(data);
 			console.log(status);
@@ -496,18 +533,48 @@ app.controller('roomController', function($scope, $http){
 			//alert(err);
 
 		});	
+        
 
 		$scope.question1 = ""; //Wanneer vraag gesteld is, tekstblok resetten
 	}
 
 	$scope.addAnswer=function(){
-		$scope.showAnswer = true;
+		
+        $scope.showAnswer = true;
 
 		$scope.answer = $scope.answer1;
+        addA = {}
+        addA ["antwoord"] = $scope.answer;
 		$scope.answer1 = "";
+        $http.post('http://localhost:3000/addAr', addA)
+        .success(function(data, status) {
+            console.log(data);
+            console.log(status);
+
+        })
+        .error(function(err) {
+            //alert(err);
+
+        }); 
 	}
 
-	init();
+    $scope.stopQuestion=function(){
+        //console.log(stelling);
+        $http.post('http://localhost:3000/questionAdd')
+        .success(function(data, status) {
+            /*console.log(data);
+            console.log(status);
+            stelling ["klas"] ="";
+            stelling ["vraag"] = "";
+            stelling ["antwoord"] = [];*/
+        })
+        .error(function(err) {
+            //alert(err);
+
+        });
+        
+    }
+    init();
 });
 
 app.controller('FaqController', function($scope){

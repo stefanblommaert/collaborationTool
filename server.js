@@ -78,19 +78,48 @@ app.post("/form",function(req,res){
 	res.json(true); //status 'true' meegeven als room is gesaved in db
 
 });
+	stelling = {}
+    stelling ["klas"] ="";
+    stelling ["vraag"] = "";
+    stelling ["antwoord"] = []; 
+
+app.post("/addQn",function(req,res){
+	//console.log(req.body.klas, req.body.vraag);
+	stelling ["klas"] = req.body.klas;
+    stelling ["vraag"] = req.body.vraag;
+    //console.log(stelling);
+});
+
+app.post("/addAr",function(req,res){
+	//console.log(req.body.antwoord);
+	stelling ["antwoord"].push(req.body.antwoord);
+	//console.log(stelling);
+});
 
 app.post("/questionAdd",function(req,res){
+	//console.log(req.body.klas, req.body.antwoord);
+	console.log(stelling);
+	db.db.collection('stellingen').save({
+		klas : stelling ["klas"],
+		vraag : stelling ["vraag"],
+		antwoord : stelling ["antwoord"]
+		}); 
+		stelling ["klas"] ="";
+    	stelling ["vraag"] = "";
+    	stelling ["antwoord"] = [];
+		//slaag gestelde vraag op
+		
+	    /*{ klas: req.body.klas },
+	    {$set: { vraag: req.body.vraag}},
+	    {$set: { antwoord: req.body.antwoord}},
+	    {upsert: true}*/
 
-	db.db.collection('Rooms').update( //slaag gestelde vraag op
-	    { klas: req.body.klas },
-	    { $set: { vraag: req.body.vraag } },
-	    {upsert: true}
-
-	);
-		console.log(req.body.klas);
-
+	
+		//console.log(stelling ["klas"]);
 		console.log("Question saved to db");
+		res.json(true);
 });
+
 
 app.post("/register", function(req,res){
 	if (req.body.username == "" || req.body.password == "") {

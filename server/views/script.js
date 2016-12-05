@@ -261,7 +261,7 @@ app.factory('Base64', function () {
     /* jshint ignore:end */
 });
 
-
+var usernameVar;
 app.controller('loginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
     function($scope, $rootScope, $location, AuthenticationService, $state, Authorization, $http) {
@@ -274,7 +274,7 @@ app.controller('loginController',
                 if (response.success) {
                     AuthenticationService.SetCredentials($scope.username, $scope.password, $scope.userRole);
                     Authorization.authorized = true;
-
+                        usernameVar = $scope.username;
                     	if ($scope.userRole == "teacher") {
                             teacherVar = true;
                             studentVar = false;
@@ -352,6 +352,7 @@ app.controller('roomController', function($scope, $http){
         $scope.teacher=false;
         $scope.student=true;
     }
+    $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 	$scope.roomList = false;
 	$scope.chosenRoom = false;
 	$scope.joinRoom = false;
@@ -443,7 +444,11 @@ app.controller('roomController', function($scope, $http){
 	$scope.roomJoin=function(){
 		$scope.joinRoom = true;
 	}
-
+    /*
+    stelling = {}
+    stelling ["klas"] ="";
+    stelling ["vraag"] = "";
+    stelling ["antwoord"] = [];   */
 	$scope.addQuestion=function(){ 
 		
 		var vraag = $('#vraagIN').val(); //van id 'vraagIN' wordt variabele vraag aangevuld
@@ -457,12 +462,12 @@ app.controller('roomController', function($scope, $http){
 
 		$scope.question = $scope.question1;
 
-		addQ = {}
+        addQ = {}
 		addQ ["klas"] = klasG;
         addQ ["vraag"] = vraag;
 
 		//Stel de vraag en voeg hem toe aan de database in de juiste room
-		$http.post('http://localhost:3000/questionAdd', addQ)
+		$http.post('http://localhost:3000/addQn', addQ)
 		.success(function(data, status) {
 			console.log(data);
 			console.log(status);
@@ -472,16 +477,46 @@ app.controller('roomController', function($scope, $http){
 			//alert(err);
 
 		});	
+        
 
 		$scope.question1 = ""; //Wanneer vraag gesteld is, tekstblok resetten
 	}
 
 	$scope.addAnswer=function(){
-		$scope.showAnswer = true;
+		
+        $scope.showAnswer = true;
 
 		$scope.answer = $scope.answer1;
+        addA = {}
+        addA ["antwoord"] = $scope.answer;
 		$scope.answer1 = "";
+        $http.post('http://localhost:3000/addAr', addA)
+        .success(function(data, status) {
+            console.log(data);
+            console.log(status);
+
+        })
+        .error(function(err) {
+            //alert(err);
+
+        }); 
 	}
+    $scope.stopQuestion=function(){
+        //console.log(stelling);
+        $http.post('http://localhost:3000/questionAdd')
+        .success(function(data, status) {
+            /*console.log(data);
+            console.log(status);
+            stelling ["klas"] ="";
+            stelling ["vraag"] = "";
+            stelling ["antwoord"] = [];*/
+        })
+        .error(function(err) {
+            //alert(err);
+
+        });
+        
+    }
 });
 
 app.controller('FaqController', function($scope){

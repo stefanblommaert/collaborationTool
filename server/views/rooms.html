@@ -2,8 +2,8 @@
 	<h1>Room Page</h1>
 	<!-- "div" hieronder wordt inhoud popup -->
 	<div>
-	    <button class="btn btn-default" ng-click='toggleModal()' ng-show="teacher" >Open Modal Dialog</button>
-	    <button type="submit" class="btn btn-default" ng-click="geefAlleRooms()" ng-show="student">geef rooms</button>
+	    <button class="btn btn-default" ng-click='toggleModal()' ng-show="teacher">Open Modal Dialog</button>
+	    <button type="submit" class="btn btn-default" ng-click="geefAlleRooms()">geef rooms</button>
 	    <modal-dialog show='modalShown' width='400px' height='100%'>
 			<div class="container">
 				<div class="col-lg-3 col-sm-12">
@@ -22,7 +22,7 @@
 						</div>					
 					</div>
 					<div class="form-group">
-						<label  for="label">tittel: </label>
+						<label  for="label">titel: </label>
 						<div >
 							<input type="text" class="form-control" id="tittelIN" placeholder="Enter title">
 						</div>					
@@ -68,13 +68,13 @@
 			<p id="infoRoomL"></p>
 			<p id="infoRoomT"></p>
 			<p id="infoRoomC"></p>
-			<p><button class="btn btn-default" ng-click="roomStart()">Start</button>
+			<p><button class="btn btn-default" ng-click="roomStart()" ng-show="teacher">Start</button>
 			<button ng-show="joinOn" class="btn btn-default" ng-click="roomJoin()">join</button></p>
 		</div>
 		<div ng-show="joinRoom">
 			<p>Joined</p>
-			<p><input type="text" placeholder="vraag" ng-model="question1" id="vraagIN" style='display:block;width:500px;margin-left:auto'>
-			<button class="btn btn-default" ng-click="addQuestion()" style="position: absolute; right: 0;">Voeg de vraag toe</button></p>
+			<p><input type="text" placeholder="vraag" ng-model="question1" id="vraagIN" style='display:block;width:500px;margin-left:auto' ng-show="teacher">
+			<button class="btn btn-default" ng-click="addQuestion()" style="position: absolute; right: 0;" ng-show="teacher">Voeg de vraag toe</button></p>
 
 		</div>
 		<div ng-show="showQuestion">
@@ -87,8 +87,8 @@
 			<p><input type="text" readonly="true" value="{{ answer }}" style='display:block;width:500px;margin-right:auto'></p>
 		</div>
 		<div ng-show="placeAnswer">
-			<p><input type="text" placeholder="Antwoord" ng-model="answer1" style='display:block;width:500px;margin-right:auto'>
-			<button class="btn btn-default" ng-click="addAnswer()" style="position: absolute; left: 0;">Antwoord</button></p>
+			<p><input type="text" placeholder="Antwoord" ng-model="answer1" style='display:block;width:500px;margin-right:auto' ng-show="student">
+			<button class="btn btn-default" ng-click="addAnswer()" style="position: absolute; left: 0;" ng-show="student">Antwoord</button></p>
 		</div>
     </div>
 </div>

@@ -42,7 +42,6 @@ app.get("/", function(req,res){
 });*/
 
 var rooms = ""; //In deze variabele wordt 'data' van de collections 'Rooms' in opgeslagen
-//var gekozenKlas = "";
 
 app.get("/getRooms",function(req,res) {
 
@@ -77,6 +76,32 @@ app.post("/form",function(req,res){
 
 	res.json(true); //status 'true' meegeven als room is gesaved in db
 
+});
+
+var roomOn = false;
+var roomStarted = false;
+app.post("/roomStarted", function(req,res){
+	
+		roomOn = true;
+		console.log("Room is gestart??" + roomOn);
+
+		res.json(roomOn);
+	
+});
+
+app.get("/isRoomStarted", function(req,res){
+	
+		if (roomOn) {
+			roomStarted = true;
+		}
+		else{
+			roomStarted = false;
+		}
+
+		console.log("isRoomStarted: " + roomStarted);
+
+		res.json(roomStarted);
+	
 });
 
 app.post("/questionAdd",function(req,res){

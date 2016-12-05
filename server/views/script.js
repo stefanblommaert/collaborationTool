@@ -36,8 +36,8 @@ app.config(function($stateProvider, $urlRouterProvider){
         })
 });
 
-var teacherVar = false;
-var studentVar = false;
+var teacherVar = false; //deze variabele wordt true gezet wanneer userrole teacher is
+var studentVar = false; //deze variabele wordt true gezet wanneer userrole student is
 
 // maakt popup aan ==>
 app.directive('modalDialog', function() {
@@ -70,20 +70,7 @@ app.controller('NavController', function($scope) {
 app.controller('MemberController', function($scope) {
 	$scope.message = 'Everyone come and see how good I look!';
 });
-//var authed = authorization;
-/*app.factory('authFactory', function () {
-    var factory = {};
-    factory.checkAuth = function (emailp) {
-      if (emailp == 'aaa') authed = true;
-      return (authed);
-    };
 
-    factory.isAuthed = function () {
-      return authed;
-    }
-    return factory;
-  });
-*/
 
 app.service('Authorization', function($state) {
 
@@ -275,7 +262,8 @@ app.controller('loginController',
                     AuthenticationService.SetCredentials($scope.username, $scope.password, $scope.userRole);
                     Authorization.authorized = true;
 
-                    	if ($scope.userRole == "teacher") {
+                    	//Wanneer login juist is, dan wordt de controle op userrole ingevoerd
+                    	if ($scope.userRole == "teacher") { 
                             teacherVar = true;
                             studentVar = false;
 	                    	console.log($scope.userRole + " success");    
@@ -342,23 +330,34 @@ app.controller('roomController', function($scope, $http){
   	$scope.toggleModal = function() {
     $scope.modalShown = !$scope.modalShown;
 	}
-    if (teacherVar == true) {
-        console.log("hij  wet da ge nen teacehr zet");
-        $scope.teacher=true;
-        $scope.student=false;
-        console.log($scope.teacher);
+    if (teacherVar == true) { //Wanneer bij de userrole blok teacher is ingevult, wordt 'teacher' scope op true gezet
+        $scope.teacher = true;
+        $scope.student = false;
     }
-    else if (studentVar == true) {
-        $scope.teacher=false;
-        $scope.student=true;
+    else if (studentVar == true) { //Wanneer bij de userrole blok student is ingevult, wordt 'student' scope op true gezet
+        $scope.teacher = false;
+        $scope.student = true;
     }
-	$scope.roomList = false;
-	$scope.chosenRoom = false;
-	$scope.joinRoom = false;
-	$scope.joinOn = false;
-	$scope.showQuestion = false;
-	$scope.placeAnswer = false;
-	$scope.showAnswer = false;
+	$scope.roomList = false; //ng-show variabele in rooms.html, wordt op true gezet wanneer op de knop 'geef rooms' gedrukt wordt
+	$scope.chosenRoom = false; //ng-show variabele in rooms.html, wordt op true gezet wanneer er op 1 van de rooms wordt gedrukt
+	$scope.joinOn = false; //Wanneer 'teacher' op de 'start' knop drukt, dan wordt deze op true gezet en wordt de 'join' knop getoond
+	$scope.joinRoom = false; //ng-show variabele in rooms.html, wordt op true gezet wanneer op de knop 'join' gedrukt wordt
+	$scope.showQuestion = false; //Wanneer een vraag wordt toegevoegd, wordt deze scope op true gezet en wordt de vraag in de html te zien
+	$scope.placeAnswer = false; //Wanneer een vraag wordt toegevoegd, ziet de student een blok om een antwoord in te zetten en toe te voegen
+	$scope.showAnswer = false; //Wanneer een antwoord wordt toegevoegd, is dit antwoord te zien onder de vraag 
+
+	$scope.roomOn = false; //Wanneer de 'teacher' een room start, wordt via de server aan deze scope true meegegeven
+
+	var init = function(){ //Wanneer room pagina wordt herladen, gaat deze functie via de server de status van roomOn ophalen (true of false)
+		console.log("Init roomController");
+
+		$http.get('http://localhost:3000/isRoomStarted')
+			.success(function(roomStarted) {
+				$scope.roomOn = roomStarted;			
+				console.log("Room status doorgestuurd, Is room gestart? " + $scope.roomOn);
+
+			})
+	}
 
 	// wat er gebeurd als er^op de knop wordt gedrukt ==>
 	$scope.submit=function(){
@@ -410,7 +409,7 @@ app.controller('roomController', function($scope, $http){
 		$scope.getRooms();
 		$scope.chosenRoom = false;
 		$scope.joinRoom = false;
-		$scope.joinOn = false;
+		//$scope.joinOn = false;
 		$scope.showQuestion = false;
 		$scope.placeAnswer = false;
 		$scope.showAnswer = false;
@@ -420,14 +419,15 @@ app.controller('roomController', function($scope, $http){
 		$scope.answer1 = "";
 	}
 	$scope.kiesRoom=function(klas, leraar, tittel, code){
-		console.log("da ha" + klas);
+		//console.log("da ha" + klas);
 		$scope.roomList = false;
 		$scope.joinRoom = false;
-		$scope.joinOn = false;
+		//$scope.joinOn = false;
 		$scope.showQuestion = false;
 		$scope.placeAnswer = false;
 		$scope.showAnswer = false;
 		$scope.chosenRoom = true;
+		
 		$('#infoRoomK').text("gekozen klas = " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
 		$('#infoRoomT').text("tittel : " + tittel);
@@ -435,11 +435,35 @@ app.controller('roomController', function($scope, $http){
 
 		$scope.gekozenKlas = klas;
 		console.log(klas);
+
+		console.log("RoomOn??: " + $scope.roomOn);
+
+		if ($scope.roomOn) { //Wanneer de room al gestart was, wordt direct ook de 'join' knop getoont
+			$scope.joinOn = true;
+		}
+
 	}
 
 	$scope.roomStart=function(){
-		$scope.joinOn = true;
+
+		if ($scope.roomOn) {
+			//doe niks
+		}
+		else{ //Dit wordt aangeroepen als de room nog niet aanstond
+			$http.post('http://localhost:3000/roomStarted')
+			.success(function(roomOn) {
+				$scope.roomOn = roomOn;			
+				console.log("Room gestart");
+				console.log("roomOn: " + $scope.roomOn);
+				$scope.joinOn = true;
+			})
+			.error(function(err) {
+	            alert(err);
+	        });
+			}
+
 	}
+
 	$scope.roomJoin=function(){
 		$scope.joinRoom = true;
 	}
@@ -482,6 +506,8 @@ app.controller('roomController', function($scope, $http){
 		$scope.answer = $scope.answer1;
 		$scope.answer1 = "";
 	}
+
+	init();
 });
 
 app.controller('FaqController', function($scope){

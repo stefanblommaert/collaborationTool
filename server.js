@@ -66,9 +66,34 @@ app.get("/getClass",function(req,res) {
             res.json(classes);
 			console.log('klassen werden gestuurd');
         })
-    });
+    });    
+});
 
-    
+//geeft vragen voor bepaalde klas weer naar script
+app.post("/getQn",function(req,res) {
+	console.log(req.body.klas);
+	db.db.collection("stellingen", function(err, collection){
+        collection.find({"klas": req.body.klas}).toArray(function(err, data){
+            //console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
+            classes = data;
+            //console.log(classes);
+            res.json(classes);
+			//console.log('klassen werden gestuurd');
+        })
+    });    
+});
+//geeft de antwoorden op de gekozen vraag weer
+app.post("/getAr",function(req,res) {
+	//console.log(req.body.vraag + req.body.klas);
+	db.db.collection("stellingen", function(err, collection){
+        collection.find({"klas": req.body.klas, "vraag": req.body.vraag}).toArray(function(err, data){
+            console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
+            classes = data;
+            //console.log(classes);
+            res.json(classes);
+			//console.log('klassen werden gestuurd');
+        })
+    });    
 });
 
 app.post("/form",function(req,res){ 

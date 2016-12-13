@@ -118,15 +118,34 @@ app.get("/isRoomStarted", function(req,res){ //Controle room al reeds gestart wa
 	
 });
 
+var questionAsked = false;
+var questionAdded = false;
+
 	stelling = {}
     stelling ["klas"] ="";
     stelling ["vraag"] = "";
     stelling ["antwoord"] = []; 
 
 app.post("/addQn",function(req,res){ //Vraagstelling aan database toevoegen
+	questionAdded = true;
+
 	stelling ["klas"] = req.body.klas;
     stelling ["vraag"] = req.body.vraag;
+
+    console.log("questionAdded: " + questionAdded);
+    res.json(questionAdded);
 });
+
+app.get("/isQuestionAsked", function(req,res){ //Bezig met vraagstelling meegeven !!!
+	if (questionAdded) {
+		questionAsked = true;
+	}
+	else{
+		questionAsked = false;
+	}
+
+	res.json(questionAsked);
+})
 
 app.post("/addAr",function(req,res){ //Antwoord op vraag aan database toevoegen
 	stelling ["antwoord"].push(req.body.antwoord);

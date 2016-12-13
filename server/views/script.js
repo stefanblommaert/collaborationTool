@@ -87,14 +87,58 @@ app.controller('NavController', function($scope) {
 app.controller('MemberController', function($scope, $http, $window) {
 	$scope.message = 'Everyone come and see how good I look!';
 
+    //nog clearen op de juiste momenten !! -->   (houdt bij op welke klas is gedrukt)
+    var gekozenKlasGlob = "";
+
+    $scope.klassenLs = true;
+    $scope.vragenLs = false;
+    $scope.antwoordenLs = false;
+    $scope.geefKlasBtn = true;
+    $scope.terugBtn = false;
     $scope.geefKlassen=function(){
         console.log("geeft klassen");
         //$window.location.reload();  zorgt voor refresh !!! maar eerst fixe dat login ingelogd blijft bij page refresh !!!!
         $http.get("http://localhost:3000/getClass")
         .success(function(classes){
-            
-            $scope.classes = classes;            
-            console.log($scope.classes);
+       
+        $scope.classes = classes;            
+        console.log($scope.classes);
+        })
+        .error(function(err) {
+
+        });
+    }
+
+    $scope.kiesKlas=function(gekozenKlas){
+        $scope.klassenLs = false;
+        $scope.vragenLs = true;
+        $scope.geefKlasBtn = false;
+        $scope.terugBtn = true;
+        klasAr = {}
+        klasAr ["klas"] = gekozenKlas;
+        gekozenKlasGlob = gekozenKlas;
+        //console.log("geeft vragen voor" + "" +klasAr);
+        $http.post("http://localhost:3000/getQn", klasAr)
+        .success(function(vragen){            
+            $scope.vragen= vragen;   
+            console.log(vragen);
+        })
+        .error(function(err) {
+
+        });
+    }
+    $scope.kiesVraag=function(gekozenVraag){
+        //$scope.klassenLs = false;
+        $scope.vragenLs = false;
+        $scope.antwoordenLs = true;
+        vraagAr = {}
+        vraagAr ["vraag"] = gekozenVraag;
+        vraagAr ["klas"] = gekozenKlasGlob;
+        //console.log("geeft vragen voor" + "" +klasAr);
+        $http.post("http://localhost:3000/getAr", vraagAr)
+        .success(function(antwoorden){            
+            $scope.antwoorden= antwoorden[0].antwoord;   
+            console.log(antwoorden[0].antwoord);
         })
         .error(function(err) {
 

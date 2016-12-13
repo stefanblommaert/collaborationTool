@@ -43,7 +43,7 @@ app.get("/", function(req,res){
 
 var rooms = ""; //In deze variabele wordt 'data' van de collections 'Rooms' in opgeslagen
 
-app.get("/getRooms",function(req,res) {
+app.get("/getRooms",function(req,res) { //Rooms worden uit de database gehaald
 
 	db.db.collection("Rooms", function(err, collection){
         collection.find({}).toArray(function(err, data){
@@ -57,7 +57,7 @@ app.get("/getRooms",function(req,res) {
 	console.log('rooms werden gestuurd');
 });
 
-app.get("/getClass",function(req,res) {
+app.get("/getClass",function(req,res) { //De juiste room aanroepen om vragen en antwoorden aan toe te voegen
 	db.db.collection("stellingen", function(err, collection){
         collection.find({}).toArray(function(err, data){
             //console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
@@ -96,7 +96,7 @@ app.post("/getAr",function(req,res) {
     });    
 });
 
-app.post("/form",function(req,res){ 
+app.post("/form",function(req,res){ //Nieuwe room aan database toevoegen
 	if (req.body.klas == "" || req.body.leraar == "" || req.body.tittel == "" || req.body.code == "") {
 		res.statusCode = 400;
 		return res.send('error 400: post syntax incorrect');
@@ -119,7 +119,7 @@ app.post("/form",function(req,res){
 
 var roomOn = false;
 var roomStarted = false;
-app.post("/roomStarted", function(req,res){
+app.post("/roomStarted", function(req,res){ //Aanroepen als een room gestart wordt
 	
 		roomOn = true;
 		console.log("Room is gestart??" + roomOn);
@@ -128,7 +128,7 @@ app.post("/roomStarted", function(req,res){
 	
 });
 
-app.get("/isRoomStarted", function(req,res){
+app.get("/isRoomStarted", function(req,res){ //Controle room al reeds gestart was
 	
 		if (roomOn) {
 			roomStarted = true;
@@ -148,16 +148,16 @@ app.get("/isRoomStarted", function(req,res){
     stelling ["vraag"] = "";
     stelling ["antwoord"] = []; 
 
-app.post("/addQn",function(req,res){
+app.post("/addQn",function(req,res){ //Vraagstelling aan database toevoegen
 	stelling ["klas"] = req.body.klas;
     stelling ["vraag"] = req.body.vraag;
 });
 
-app.post("/addAr",function(req,res){
+app.post("/addAr",function(req,res){ //Antwoord op vraag aan database toevoegen
 	stelling ["antwoord"].push(req.body.antwoord);
 });
 
-app.post("/questionAdd",function(req,res){
+app.post("/questionAdd",function(req,res){ //Array wordt gereset om nieuwe vraagstelling met andere antwoorden op de database te kunnen zetten
 	console.log(stelling);
 	db.db.collection('stellingen').save({
 		klas : stelling ["klas"],
@@ -174,7 +174,7 @@ app.post("/questionAdd",function(req,res){
 });
 
 
-app.post("/register", function(req,res){
+app.post("/register", function(req,res){ //Save nieuwe users op de database
 	if (req.body.username == "" || req.body.password == "") {
 		res.statusCode = 400;
 		return res.send('error 400: post syntax incorrect');
@@ -196,7 +196,7 @@ app.post("/register", function(req,res){
 var myDocument = "";
 var myPassword = "";
 
-app.post("/authenticate",function(req,res){ 
+app.post("/authenticate",function(req,res){ //Controle login gegevens met de database 'Users'
 	db.db.collection("Users", function(err, collection){
 		//console.log(req.body.username);
         myDocument = collection.findOne({"username": req.body.username});

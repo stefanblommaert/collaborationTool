@@ -1,6 +1,6 @@
 var app = angular.module('collaboration-tool', ['ui.router', 'ngCookies']);
 
-app.filter('unique', function() {
+app.filter('unique', function() { //Deze filter wordt gebruikt voor dezelfde items maar 1 keer te tonen
    return function(collection, keyname) {
       var output = [], 
           keys = [];
@@ -17,7 +17,7 @@ app.filter('unique', function() {
    };
 });
 
-app.config(function($stateProvider, $urlRouterProvider){
+app.config(function($stateProvider, $urlRouterProvider){ //Dit zorgt ervoor dat het een one-page-app is
 
 	$urlRouterProvider.otherwise('/home'); //Als URL niet wordt gevonden, ga naar home pagina
 
@@ -57,7 +57,7 @@ var teacherVar = false; //deze variabele wordt true gezet wanneer userrole teach
 var studentVar = false; //deze variabele wordt true gezet wanneer userrole student is
 
 // maakt popup aan ==>
-app.directive('modalDialog', function() {
+app.directive('modalDialog', function() { //Deze directive is voor het pop-up scherm voor een nieuwe room aan te maken
   return {
     restrict: 'E',
     scope: {
@@ -100,9 +100,9 @@ app.controller('MemberController', function($scope, $http, $window) {
         //$window.location.reload();  zorgt voor refresh !!! maar eerst fixe dat login ingelogd blijft bij page refresh !!!!
         $http.get("http://localhost:3000/getClass")
         .success(function(classes){
-            
-            $scope.classes= classes;   
-            console.log(classes);
+       
+        $scope.classes = classes;            
+        console.log($scope.classes);
         })
         .error(function(err) {
 
@@ -146,7 +146,7 @@ app.controller('MemberController', function($scope, $http, $window) {
     }
 });
 
-app.service('Authorization', function($state) {
+app.service('Authorization', function($state) { 
 
   this.authorized = false;
   this.memorizedState = null;
@@ -172,7 +172,7 @@ app.service('Authorization', function($state) {
 });
 
 
-app.run(function ($rootScope, $state, Authorization) {
+app.run(function ($rootScope, $state, Authorization) { //Dit wordt gebruikt voor de restrictie op sommige pagina's als men is ingelogd
 	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams){
     	if (toState.authenticate && !Authorization.authorized) {
     		//User isn't authenticated
@@ -201,7 +201,9 @@ app.factory('AuthenticationService',
  
             Use this for real authentication
              ----------------------------------------------*/
-            $http.post('http://localhost:3000/authenticate', { username: username, password: password, userRole: userRole })
+
+             //Ingevulde gegevens van login worden doorgestuurd naar de server
+            $http.post('http://localhost:3000/authenticate', { username: username, password: password, userRole: userRole }) 
                 .success(function (response) {
                     callback(response);
                     console.log('send to server');
@@ -329,23 +331,24 @@ app.controller('loginController',
         // reset login status
         AuthenticationService.ClearCredentials();
 
-        $scope.login = function () {
+        $scope.login = function () { //Wanneer de login gegevens juist zijn, zal de authorisatie variabele op true worden gezet en zal de userrole gecontroleerd worden
             $scope.dataLoading = true;
             AuthenticationService.Login($scope.username, $scope.password, $scope.userRole, function (response) {
                 if (response.success) {
                     AuthenticationService.SetCredentials($scope.username, $scope.password, $scope.userRole);
                     Authorization.authorized = true;
 
-                    	if ($scope.userRole == "teacher") {
+                    	//Controle op userrole, iedere userrole heeft zijn beperkingen op bepaalde pagina's
+                    	if ($scope.userRole == "teacher") { 
                             teacherVar = true;
                             studentVar = false;
-	                    	console.log($scope.userRole + " success");    
+	                    	//console.log($scope.userRole + " success");    
                             Authorization.go('rooms');           		
                     	}
                     	else if ($scope.userRole == "student") {
                             teacherVar = false;
                             studentVar = true;
-	                    	console.log($scope.userRole + " success");
+	                    	//console.log($scope.userRole + " success");
                             Authorization.go('rooms');
                     	}
                     	else{
@@ -373,7 +376,7 @@ app.controller('loginController',
 		    $state.go('home');
 		};
 
-        $scope.register = function() {
+        $scope.register = function() { //Registreer een gebruiker in de database
 
             console.log("submitted"); 
             var username = $('#usernameReg').val();
@@ -424,7 +427,6 @@ app.controller('roomController', function($scope, $http){
     $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 
 	var init = function(){ //Wanneer room pagina wordt herladen, gaat deze functie via de server de status van roomOn ophalen (true of false)
-		console.log("Init roomController");
 
 		$http.get('http://localhost:3000/isRoomStarted')
 			.success(function(roomStarted) {
@@ -434,14 +436,13 @@ app.controller('roomController', function($scope, $http){
 			})
 	}
 
-	// wat er gebeurd als er^op de knop wordt gedrukt ==>
+	// wat er gebeurd als er op de knop wordt gedrukt ==>
 	$scope.submit=function(){
 		console.log("submitted"); 
 		var klas = $('#klasIN').val();
 		var leraar = $('#leraarIN').val();
 		var tittel = $('#tittelIN').val();
 		var code = $('#codeIN').val();
-		console.log(code); 
 
 		form = {}
         form ["klas"] = klas;
@@ -466,25 +467,24 @@ app.controller('roomController', function($scope, $http){
   };
 
   var roomArr;
-	$scope.getRooms=function(){
+	$scope.getRooms=function(){ //Deze scope gaat via de server de database nakijken welke rooms er zijn
 		console.log("geeft rooms");
 		$http.get("http://localhost:3000/getRooms")
 		.success(function(rooms){
 			
 			$scope.rooms= rooms;			
 			roomArr = rooms;
-			console.log(roomArr);
+			//console.log(roomArr);
 		})
 		.error(function(err) {
 
 		});
 	}
 
-	$scope.geefAlleRooms=function(){
+	$scope.geefAlleRooms=function(){ //In deze scope worden de opgeladen rooms getoond in de view
 		$scope.getRooms();
 		$scope.chosenRoom = false;
 		$scope.joinRoom = false;
-		//$scope.joinOn = false;
 		$scope.showQuestion = false;
 		$scope.placeAnswer = false;
 		$scope.showAnswer = false;
@@ -493,11 +493,10 @@ app.controller('roomController', function($scope, $http){
 		$scope.question = ""; //Vraag scope resetten als je uit de room gaat
 		$scope.answer1 = "";
 	}
-	$scope.kiesRoom=function(klas, leraar, tittel, code){
+	$scope.kiesRoom=function(klas, leraar, tittel, code){ //Als er een room gekozen wordt, wordt deze scope aangeroepen en toont de juiste gegevens van de room
 		//console.log("da ha" + klas);
 		$scope.roomList = false;
 		$scope.joinRoom = false;
-		//$scope.joinOn = false;
 		$scope.showQuestion = false;
 		$scope.placeAnswer = false;
 		$scope.showAnswer = false;
@@ -509,7 +508,7 @@ app.controller('roomController', function($scope, $http){
 		$('#infoRoomC').text("code : " + code);
 
 		$scope.gekozenKlas = klas;
-		console.log(klas);
+		//console.log(klas);
 
 		console.log("RoomOn??: " + $scope.roomOn);
 
@@ -519,7 +518,7 @@ app.controller('roomController', function($scope, $http){
 
 	}
 
-	$scope.roomStart=function(){
+	$scope.roomStart=function(){ //Wanneer op de 'start' knop in de view gedrukt wordt, wordt deze scope aangeroepen
 
 		if ($scope.roomOn) {
 			//doe niks
@@ -528,7 +527,6 @@ app.controller('roomController', function($scope, $http){
 			$http.post('http://localhost:3000/roomStarted')
 			.success(function(roomOn) {
 				$scope.roomOn = roomOn;			
-				console.log("Room gestart");
 				console.log("roomOn: " + $scope.roomOn);
 				$scope.joinOn = true;
 			})
@@ -539,15 +537,11 @@ app.controller('roomController', function($scope, $http){
 
 	}
 
-	$scope.roomJoin=function(){
+	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is
 		$scope.joinRoom = true;
 	}
-    /*
-    stelling = {}
-    stelling ["klas"] ="";
-    stelling ["vraag"] = "";
-    stelling ["antwoord"] = [];   */
-	$scope.addQuestion=function(){ 
+
+	$scope.addQuestion=function(){ //Hierbij wordt een vraag toegevoegd en direct naar de database via de server gestuurd
 		
 		var vraag = $('#vraagIN').val(); //van id 'vraagIN' wordt variabele vraag aangevuld
 		var klasG = $scope.gekozenKlas;
@@ -580,7 +574,7 @@ app.controller('roomController', function($scope, $http){
 		$scope.question1 = ""; //Wanneer vraag gesteld is, tekstblok resetten
 	}
 
-	$scope.addAnswer=function(){
+	$scope.addAnswer=function(){ //Vraag wordt toegevoegd en naar database gestuurd, gelinkt aan de juiste vraagstelling
 		
         $scope.showAnswer = true;
 
@@ -600,7 +594,7 @@ app.controller('roomController', function($scope, $http){
         }); 
 	}
 
-    $scope.stopQuestion=function(){
+    $scope.stopQuestion=function(){ //Vraagstelling stoppen
         //console.log(stelling);
         $http.post('http://localhost:3000/questionAdd')
         .success(function(data, status) {
@@ -616,7 +610,7 @@ app.controller('roomController', function($scope, $http){
         });
         
     }
-    init();
+    init(); //Deze functie wordt altijd aangeroepen bij het opnieuw openen van de roompagina (controle op rooms die aanstaan)
 });
 
 app.controller('FaqController', function($scope){

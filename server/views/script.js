@@ -182,7 +182,7 @@ app.service('Authorization', function($state) {
 });
 
 
-app.run(function ($rootScope, $state, Authorization) { //Dit wordt gebruikt voor de restrictie op sommige pagina's als men is ingelogd
+app.run(function ($rootScope, $state, Authorization) { //Dit wordt gebruikt voor de restrictie op sommige pagina's als men niet ingelogd is
 	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams){
     	if (toState.authenticate && !Authorization.authorized) {
     		//User isn't authenticated
@@ -433,6 +433,9 @@ app.controller('roomController', function($scope, $http){
 	$scope.showAnswer = false; //Wanneer een antwoord wordt toegevoegd, is dit antwoord te zien onder de vraag 
 
 	$scope.roomOn = false; //Wanneer de 'teacher' een room start, wordt via de server aan deze scope true meegegeven
+	$scope.questionAdded = false;
+
+	//$scope.question = "";
 
     $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 
@@ -443,6 +446,24 @@ app.controller('roomController', function($scope, $http){
 				$scope.roomOn = roomStarted;			
 				console.log("Room status doorgestuurd, Is room gestart? " + $scope.roomOn);
 
+			})
+
+		$http.get('http://localhost:3000/isQuestionAsked')
+			.success(function(questionAsked) {
+				$scope.questionAdded = questionAsked;			
+				console.log("Is er al een vraag gesteld in de room ? " + $scope.questionAdded);
+
+			})
+
+		$http.get('http://localhost:3000/sendQuestion')
+			.success(function(gesteldeVraag1){
+				if ($scope.questionAdded) {
+					$scope.gesteldeVraag = gesteldeVraag1;
+					console.log("De vraag was: " + $scope.gesteldeVraag);
+				}
+				else{
+					//Voorlopig nog niks
+				}
 			})
 	}
 
@@ -493,6 +514,7 @@ app.controller('roomController', function($scope, $http){
 
 	$scope.geefAlleRooms=function(){ //In deze scope worden de opgeladen rooms getoond in de view
 		$scope.getRooms();
+		init(); //Deze functie wordt altijd aangeroepen bij het opnieuw laden van de rooms (controle op rooms die aanstaan)
 		$scope.chosenRoom = false;
 		$scope.joinRoom = false;
 		$scope.showQuestion = false;
@@ -514,7 +536,7 @@ app.controller('roomController', function($scope, $http){
 		
 		$('#infoRoomK').text("gekozen klas = " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
-		$('#infoRoomT').text("tittel : " + tittel);
+		$('#infoRoomT').text("titel : " + tittel);
 		$('#infoRoomC').text("code : " + code);
 
 		$scope.gekozenKlas = klas;
@@ -549,6 +571,16 @@ app.controller('roomController', function($scope, $http){
 
 	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is
 		$scope.joinRoom = true;
+
+		if ($scope.questionAdded) { //Wanneer er een vraag door de teacher was toegevoegd wordt deze getoont in de html bij de student
+			$scope.showQuestion = true;
+			$scope.placeAnswer = true;
+			$scope.question = $scope.gesteldeVraag;
+		}
+		else{
+			$scope.showQuestion = false;
+			$scope.placeAnswer = false;
+		}
 	}
 
 	$scope.addQuestion=function(){ //Hierbij wordt een vraag toegevoegd en direct naar de database via de server gestuurd
@@ -558,9 +590,9 @@ app.controller('roomController', function($scope, $http){
 
 		$scope.showQuestion = true;
 		$scope.placeAnswer = true;
+
 		console.log(vraag);
 		console.log(klasG);
-		console.log($scope.gekozenKlas);
 
 		$scope.question = $scope.question1;
 
@@ -572,9 +604,13 @@ app.controller('roomController', function($scope, $http){
 		$http.post('http://localhost:3000/addQn', addQ)
 		.success(function(data, status) {
 			console.log(data);
-			console.log(status);
+			console.log(status);	
 
 		})
+		.success(function(questionAdded){ //Post functie naar server om variabele voor questionAdded op true te zetten
+			$scope.questionAdded = questionAdded;
+		})
+
 		.error(function(err) {
 			//alert(err);
 
@@ -620,7 +656,6 @@ app.controller('roomController', function($scope, $http){
         });
         
     }
-    init(); //Deze functie wordt altijd aangeroepen bij het opnieuw openen van de roompagina (controle op rooms die aanstaan)
 });
 
 app.controller('FaqController', function($scope){

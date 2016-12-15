@@ -144,6 +144,16 @@ app.controller('MemberController', function($scope, $http, $window) {
 
         });
     }
+
+    $scope.terug=function(){
+    	var gekozenKlasGlob = "";
+
+	    $scope.klassenLs = true;
+	    $scope.vragenLs = false;
+	    $scope.antwoordenLs = false;
+	    $scope.geefKlasBtn = true;
+	    $scope.terugBtn = false;
+    }
 });
 
 app.service('Authorization', function($state) { 

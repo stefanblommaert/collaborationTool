@@ -442,8 +442,18 @@ app.controller('roomController', function($scope, $http){
 			.success(function(questionAsked) {
 				$scope.questionAdded = questionAsked;			
 				console.log("Is er al een vraag gesteld in de room ? " + $scope.questionAdded);
-				console.log("Question: " + $scope.question);
 
+			})
+
+		$http.get('http://localhost:3000/sendQuestion')
+			.success(function(gesteldeVraag1){
+				if ($scope.questionAdded) {
+					$scope.gesteldeVraag = gesteldeVraag1;
+					console.log("De vraag was: " + $scope.gesteldeVraag);
+				}
+				else{
+					//Voorlopig nog niks
+				}
 			})
 	}
 
@@ -494,6 +504,7 @@ app.controller('roomController', function($scope, $http){
 
 	$scope.geefAlleRooms=function(){ //In deze scope worden de opgeladen rooms getoond in de view
 		$scope.getRooms();
+		init(); //Deze functie wordt altijd aangeroepen bij het opnieuw laden van de rooms (controle op rooms die aanstaan)
 		$scope.chosenRoom = false;
 		$scope.joinRoom = false;
 		$scope.showQuestion = false;
@@ -550,6 +561,16 @@ app.controller('roomController', function($scope, $http){
 
 	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is
 		$scope.joinRoom = true;
+
+		if ($scope.questionAdded) { //Wanneer er een vraag door de teacher was toegevoegd wordt deze getoont in de html bij de student
+			$scope.showQuestion = true;
+			$scope.placeAnswer = true;
+			$scope.question = $scope.gesteldeVraag;
+		}
+		else{
+			$scope.showQuestion = false;
+			$scope.placeAnswer = false;
+		}
 	}
 
 	$scope.addQuestion=function(){ //Hierbij wordt een vraag toegevoegd en direct naar de database via de server gestuurd
@@ -570,15 +591,14 @@ app.controller('roomController', function($scope, $http){
         addQ ["vraag"] = vraag;
 
 		//Stel de vraag en voeg hem toe aan de database in de juiste room
-		$http.post('http://localhost:3000/addQn', addQ) //Bezig met vraagstelling meegeven !!!
+		$http.post('http://localhost:3000/addQn', addQ)
 		.success(function(data, status) {
 			console.log(data);
 			console.log(status);	
 
 		})
-		.success(function(questionAdded){
+		.success(function(questionAdded){ //Post functie naar server om variabele voor questionAdded op true te zetten
 			$scope.questionAdded = questionAdded;
-			console.log("questionAdded: " + $scope.questionAdded);
 		})
 
 		.error(function(err) {
@@ -626,7 +646,6 @@ app.controller('roomController', function($scope, $http){
         });
         
     }
-    init(); //Deze functie wordt altijd aangeroepen bij het opnieuw openen van de roompagina (controle op rooms die aanstaan)
 });
 
 app.controller('FaqController', function($scope){

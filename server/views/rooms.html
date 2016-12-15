@@ -73,9 +73,9 @@
 		</div>
 		<div ng-show="joinRoom">
 			<p>Joined</p>
-			<p><input type="text" placeholder="vraag" ng-model="question1" id="vraagIN" style='display:block;width:500px;margin-left:auto' > <!--ng-show="teacher"-->
-			<button class="btn btn-default" ng-click="addQuestion()" style="position: absolute; right: 0;" >Voeg de vraag toe</button></p> <!--ng-show="teacher"-->
-			<button class="btn btn-default" ng-click="stopQuestion()" style="position: absolute; right: 10;" >stop stelling</button></p> <!--ng-show="teacher"-->
+			<p><input type="text" placeholder="vraag" ng-model="question1" id="vraagIN" style='display:block;width:500px;margin-left:auto' ng-show="teacher"> 
+			<button class="btn btn-default" ng-click="addQuestion()" style="position: absolute; right: 0;" ng-show="teacher">Voeg de vraag toe</button></p>
+			<button class="btn btn-default" ng-click="stopQuestion()" style="position: absolute; right: 10;" ng-show="teacher">stop stelling</button></p>
 
 		</div>
 		<div ng-show="showQuestion">
@@ -88,8 +88,8 @@
 			<p><input type="text" readonly="true" value="{{ answer }}" style='display:block;width:500px;margin-right:auto'></p>
 		</div>
 		<div ng-show="placeAnswer">
-			<p><input type="text" placeholder="Antwoord" ng-model="answer1" style='display:block;width:500px;margin-right:auto' > <!--ng-show="student"-->
-			<button class="btn btn-default" ng-click="addAnswer()" style="position: absolute; left: 0;" >Antwoord</button></p> <!--ng-show="student"-->
+			<p><input type="text" placeholder="Antwoord" ng-model="answer1" style='display:block;width:500px;margin-right:auto' ng-show="student">
+			<button class="btn btn-default" ng-click="addAnswer()" style="position: absolute; left: 0;" ng-show="student">Antwoord</button></p>
 		</div>
     </div>
 </div>

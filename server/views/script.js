@@ -349,25 +349,43 @@ app.controller('loginController',
                     Authorization.authorized = true;
 
                     	//Controle op userrole, iedere userrole heeft zijn beperkingen op bepaalde pagina's
-                    	if ($scope.userRole == "teacher") { 
-                            teacherVar = true;
-                            studentVar = false;
-	                    	//console.log($scope.userRole + " success");    
-                            Authorization.go('rooms');           		
-                    	}
-                    	else if ($scope.userRole == "student") {
-                            teacherVar = false;
-                            studentVar = true;
-	                    	//console.log($scope.userRole + " success");
-                            Authorization.go('rooms');
-                    	}
-                    	else{
-                    		console.log("Wrong role");
-                    		$scope.error = response.message;
-		                    $scope.dataLoading = false;
-		                    Authorization.clear();
-		                    Authorization.authorized = false;
-                    	}
+                        //hier 
+                        authForm = {}
+                        authForm ["username"] = $scope.username;
+                        authForm ["password"] = $scope.password;
+                        var collectedUserRole; 
+                         //push abject naar server
+                        $http.post('http://localhost:3000/checkRoles', authForm)
+                        .success(function(userVanServer) {
+                            collectedUserRole = userVanServer[0].role;
+                            console.log(collectedUserRole);
+
+                            
+                            if (collectedUserRole == "teacher") { 
+                                teacherVar = true;
+                                studentVar = false;
+                                //console.log($scope.userRole + " success");    
+                                Authorization.go('rooms');                  
+                            }
+                            else if (collectedUserRole == "student") {
+                                teacherVar = false;
+                                studentVar = true;
+                                //console.log($scope.userRole + " success");
+                                Authorization.go('rooms');
+                            }
+                            else{
+                                console.log("Wrong role");
+                                $scope.error = response.message;
+                                $scope.dataLoading = false;
+                                Authorization.clear();
+                                Authorization.authorized = false;
+                            }
+                        })
+                        .error(function(err) {
+                            alert(err);
+                        });
+
+                        //tot hier probeersel
                     
                 } else {
                     console.log('mislukt');
@@ -386,26 +404,48 @@ app.controller('loginController',
 		    $state.go('home');
 		};
 
+        //globale variablen om radioButton bij te houden
+        var registerRole = "";
         $scope.register = function() { //Registreer een gebruiker in de database
 
             console.log("submitted"); 
+            // haal waarden op van form
             var username = $('#usernameReg').val();
             var password = $('#passwordReg').val();
-            //var functie = $('#tittelIN').val();
-            //console.log(code); 
+            var code = $('#codeReg').val();
 
+            // zet waarden van form in object
             registerForm = {}
             registerForm ["username"] = username;
             registerForm ["password"] = password;
-            //registerForm ["tittel"] = tittel;
+            registerForm ["role"] = registerRole;
+            registerForm ["code"] = code;
 
+             //push abject naar server
             $http.post('http://localhost:3000/register', registerForm)
             .success(function(data, status) {
             console.log(data);
             console.log(status);
+
+            //clear form en variabelen
             $('#usernameReg').val('');
-            $('#passwordReg').val('');
+            $('#passwordReg').val('');  
+            $('#codeReg').val('');          
+            registerRole = "";
         })
+        .error(function(err) {
+            alert(err);
+
+        }); 
+        }
+        //radiobuttuns bijhouden
+        $scope.teacherChecked = function(value) {
+            registerRole=value;
+            $scope.teacherCode=true;
+        }
+        $scope.studentChecked = function(value) {
+            registerRole=value;
+            $scope.teacherCode=false;
         }
 
     }]);

@@ -124,6 +124,17 @@ app.post("/roomStarted", function(req,res){ //Aanroepen als een room gestart wor
 		roomOn = true;
 		console.log("Room is gestart??" + roomOn);
 
+
+		console.log(req.body.klas + req.body.status); //Testfase scheiding rooms aanzetten
+		db.db.collection("Rooms", function(err, collection){
+	        collection.find({"klas": req.body.klas, "status": req.body.status}).toArray(function(err, data){
+	            console.log(data); // 
+	            klasstatus = data;
+	            //res.json(klasstatus);
+	        })
+	    }); 
+
+
 		res.json(roomOn);
 	
 });
@@ -145,6 +156,12 @@ app.get("/isRoomStarted", function(req,res){ //Controle room al reeds gestart wa
 
 var questionAsked = false;
 var questionAdded = false;
+var gesteldeVraag = "";
+var gesteldeVraag1 = "";
+var answerAdded = false;
+var answerIsAdded = false;
+var gesteldAntwoord = "";
+var gesteldAntwoord1 = "";
 
 	stelling = {}
     stelling ["klas"] ="";
@@ -156,12 +173,12 @@ app.post("/addQn",function(req,res){ //Vraagstelling aan database toevoegen
 
 	stelling ["klas"] = req.body.klas;
     stelling ["vraag"] = req.body.vraag;
+    gesteldeVraag = req.body.vraag;
 
-    console.log("questionAdded: " + questionAdded);
     res.json(questionAdded);
 });
 
-app.get("/isQuestionAsked", function(req,res){ //Bezig met vraagstelling meegeven !!!
+app.get("/isQuestionAsked", function(req,res){ //In init in de script wordt controle gevoerd of er een vraag was toegevoegd
 	if (questionAdded) {
 		questionAsked = true;
 	}
@@ -172,9 +189,35 @@ app.get("/isQuestionAsked", function(req,res){ //Bezig met vraagstelling meegeve
 	res.json(questionAsked);
 })
 
+app.get("/sendQuestion", function(req,res){ //Gestelde vraag meegeven aan de script
+	gesteldeVraag1 = gesteldeVraag;
+	res.json(gesteldeVraag1);
+})
+
 app.post("/addAr",function(req,res){ //Antwoord op vraag aan database toevoegen
+	answerAdded = true;
+
 	stelling ["antwoord"].push(req.body.antwoord);
+	gesteldAntwoord = req.body.antwoord;
+
+	res.json(answerAdded);
 });
+
+app.get("/isAnswerAdded",function(req,res){ //In init in de script wordt controle gevoerd of er een antwoord is gegeven
+	if (answerAdded) {
+		answerIsAdded = true;
+	}
+	else{
+		answerIsAdded = false;
+	}
+
+	res.json(answerIsAdded);
+})
+
+app.get("/sendAnswer", function(req,res){  //Gesteld antwoord meegeven aan de script
+	gesteldAntwoord1 = gesteldAntwoord;
+	res.json(gesteldAntwoord1);
+})
 
 app.post("/questionAdd",function(req,res){ //Array wordt gereset om nieuwe vraagstelling met andere antwoorden op de database te kunnen zetten
 	console.log(stelling);

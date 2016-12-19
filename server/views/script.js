@@ -181,7 +181,7 @@ app.service('Authorization', function($state) {
 });
 
 
-app.run(function ($rootScope, $state, Authorization) { //Dit wordt gebruikt voor de restrictie op sommige pagina's als men is ingelogd
+app.run(function ($rootScope, $state, Authorization) { //Dit wordt gebruikt voor de restrictie op sommige pagina's als men niet ingelogd is
 	$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams){
     	if (toState.authenticate && !Authorization.authorized) {
     		//User isn't authenticated
@@ -472,6 +472,9 @@ app.controller('roomController', function($scope, $http){
 	$scope.showAnswer = false; //Wanneer een antwoord wordt toegevoegd, is dit antwoord te zien onder de vraag 
 
 	$scope.roomOn = false; //Wanneer de 'teacher' een room start, wordt via de server aan deze scope true meegegeven
+	$scope.questionAdded = false;
+
+	//$scope.question = "";
 
     $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 
@@ -481,6 +484,14 @@ app.controller('roomController', function($scope, $http){
 			.success(function(roomStarted) {
 				$scope.roomOn = roomStarted;			
 				console.log("Room status doorgestuurd, Is room gestart? " + $scope.roomOn);
+
+			})
+
+		$http.get('http://localhost:3000/isQuestionAsked')
+			.success(function(questionAsked) {
+				$scope.questionAdded = questionAsked;			
+				console.log("Is er al een vraag gesteld in de room ? " + $scope.questionAdded);
+				console.log("Question: " + $scope.question);
 
 			})
 	}
@@ -553,7 +564,7 @@ app.controller('roomController', function($scope, $http){
 		
 		$('#infoRoomK').text("gekozen klas = " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
-		$('#infoRoomT').text("tittel : " + tittel);
+		$('#infoRoomT').text("titel : " + tittel);
 		$('#infoRoomC').text("code : " + code);
 
 		$scope.gekozenKlas = klas;
@@ -597,9 +608,9 @@ app.controller('roomController', function($scope, $http){
 
 		$scope.showQuestion = true;
 		$scope.placeAnswer = true;
+
 		console.log(vraag);
 		console.log(klasG);
-		console.log($scope.gekozenKlas);
 
 		$scope.question = $scope.question1;
 
@@ -608,12 +619,17 @@ app.controller('roomController', function($scope, $http){
         addQ ["vraag"] = vraag;
 
 		//Stel de vraag en voeg hem toe aan de database in de juiste room
-		$http.post('http://localhost:3000/addQn', addQ)
+		$http.post('http://localhost:3000/addQn', addQ) //Bezig met vraagstelling meegeven !!!
 		.success(function(data, status) {
 			console.log(data);
-			console.log(status);
+			console.log(status);	
 
 		})
+		.success(function(questionAdded){
+			$scope.questionAdded = questionAdded;
+			console.log("questionAdded: " + $scope.questionAdded);
+		})
+
 		.error(function(err) {
 			//alert(err);
 

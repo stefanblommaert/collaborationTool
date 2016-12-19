@@ -175,16 +175,19 @@ app.post("/questionAdd",function(req,res){ //Array wordt gereset om nieuwe vraag
 
 
 app.post("/register", function(req,res){ //Save nieuwe users op de database
-	if (req.body.username == "" || req.body.password == "") {
+	if (req.body.username == "" || req.body.password == "" || req.body.role == "") {
 		res.statusCode = 400;
-		return res.send('error 400: post syntax incorrect');
+		return res.send('not everything was filled in');
 	}
-
+	if (req.body.role == "teacher" && req.body.code !== "1234") {
+		res.statusCode = 400;
+		return res.send('please give the correct teacherCode');
+	}
 	db.db.collection("Users", function(err, collection){
 		collection.save( { //nieuwe room gegevens updaten in collection 'users'
 			username : req.body.username,
-			password : req.body.password
-			//functie : req.body.functie
+			password : req.body.password,
+			role : req.body.role
 		} )
 		console.log("user saved to db");
 
@@ -192,6 +195,31 @@ app.post("/register", function(req,res){ //Save nieuwe users op de database
 
 	res.json(true); //status 'true' meegeven als room is gesaved in db
 });
+
+app.post("/checkRoles", function(req,res){
+	if (req.body.username == "" || req.body.password == "") {
+		res.statusCode = 400;
+		return res.send('not everything was filled in');
+	}
+	db.db.collection("Users", function(err, collection){
+		console.log('username = ' + req.body.username);
+		console.log('password = ' + req.body.password);
+        collection.find({"username": req.body.username, "password": req.body.password}).toArray(function(err, data){
+			user = data;
+			if (user == null) {
+				res.statusCode = 400;
+				return res.send('no role was appended to this usernam');
+			}
+			else {
+				//console.log('user' + data +' met ' + req.body.username +'en' + req.body.password ); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
+	            user = data;
+	            //console.log(classes);
+	            res.json(user);
+				console.log(user);
+			}
+        })
+    }); 
+})
 
 var myDocument = "";
 var myPassword = "";

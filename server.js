@@ -148,7 +148,7 @@ app.get("/isRoomStarted", function(req,res){ //Controle room al reeds gestart wa
 			roomStarted = false;
 		}
 
-		console.log("isRoomStarted: " + roomStarted);
+		//console.log("isRoomStarted: " + roomStarted);
 
 		res.json(roomStarted);
 	

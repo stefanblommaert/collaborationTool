@@ -441,12 +441,12 @@ app.controller('roomController', function($scope, $http){
 
 	var init = function(){ //Wanneer rooms worden opgehaald, gaat deze functie via de server de status van alle onderstaande variabelen ophalen (true of false)
 
-		$http.get('http://localhost:3000/isRoomStarted')
+		/*$http.get('http://localhost:3000/isRoomStarted')
 			.success(function(roomStarted) {
 				$scope.roomOn = roomStarted;			
 				console.log("Room status doorgestuurd, Is room gestart? " + $scope.roomOn);
 
-			})
+			})*/
 
 		$http.get('http://localhost:3000/isQuestionAsked')
 			.success(function(questionAsked) {
@@ -490,13 +490,13 @@ app.controller('roomController', function($scope, $http){
 		var klas = $('#klasIN').val();
 		var leraar = $('#leraarIN').val();
 		var tittel = $('#tittelIN').val();
-		var code = $('#codeIN').val();
+		var code = $('#statusIN').val();
 
 		form = {}
         form ["klas"] = klas;
         form ["leraar"] = leraar;
         form ["tittel"] = tittel;
-        form ["code"] = code;
+        form ["status"] = status;
 
 		$http.post('http://localhost:3000/form', form)
 		.success(function(data, status) {
@@ -505,7 +505,7 @@ app.controller('roomController', function($scope, $http){
 			$('#klasIN').val('');
 			$('#leraarIN').val('');
 			$('#tittelIN').val('');
-			$('#codeIN').val('');
+			$('#statusIN').val('');
 		})
 		.error(function(err) {
 			alert(err);
@@ -542,7 +542,7 @@ app.controller('roomController', function($scope, $http){
 		$scope.question = ""; //Vraag scope resetten als je uit de room gaat
 		$scope.answer1 = "";
 	}
-	$scope.kiesRoom=function(klas, leraar, tittel, code){ //Als er een room gekozen wordt, wordt deze scope aangeroepen en toont de juiste gegevens van de room
+	$scope.kiesRoom=function(klas, leraar, tittel, status, gekozenKlas){ //Als er een room gekozen wordt, wordt deze scope aangeroepen en toont de juiste gegevens van de room
 		//console.log("da ha" + klas);
 		$scope.roomList = false;
 		$scope.joinRoom = false;
@@ -554,32 +554,60 @@ app.controller('roomController', function($scope, $http){
 		$('#infoRoomK').text("gekozen klas = " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
 		$('#infoRoomT').text("titel : " + tittel);
-		$('#infoRoomC').text("code : " + code);
+		$('#infoRoomC').text("status : " + status);
 
 		$scope.gekozenKlas = klas;
 
 		console.log("RoomOn??: " + $scope.roomOn);
 
-		if ($scope.roomOn) { //Wanneer de room al gestart was, wordt direct ook de 'join' knop getoont
+		statusAr = {}
+        statusAr ["klasR"] = $scope.gekozenKlas;
+
+		/*if ($scope.roomOn) { //Wanneer de room al gestart was, wordt direct ook de 'join' knop getoont
 			$scope.joinOn = true;
-		}
+		}*/
+
+		$http.post('http://localhost:3000/roomStatusFromDB', statusAr)
+			.success(function(data, status){
+				console.log(data);
+				console.log(status);
+				console.log("klas in de get: " + $scope.gekozenKlas);
+				
+			})
+			.success(function(klasobjecten){            
+	            $scope.klasstatus = klasobjecten[0].status;   
+	            console.log($scope.klasstatus);
+
+	            if ($scope.klasstatus) {
+	            	//wanneer klas aan staat
+	            	$scope.joinOn = true;
+	            }
+	            else{
+	            	$scope.joinOn = false;
+	            }
+	        })
+
+			.error(function(err) {
+	            alert(err);
+	        });		
 
 	}
 
 	$scope.roomStart=function(){ //Wanneer op de 'start' knop in de view gedrukt wordt, wordt deze scope aangeroepen
 
-		if ($scope.roomOn) {
+		if ($scope.klasstatus) {
 			//doe niks
+			console.log("klas is al gestart");
 		}
 		else{ //Dit wordt aangeroepen als de room nog niet aanstond
 			var klasG = $scope.gekozenKlas;
-			var status = true;
+			var statusRoom = true;
 
 			addK = {}
 			addK ["klas"] = klasG;
-			addK ["status"] = status;
+			addK ["statusR"] = statusRoom;
 
-			$http.post('http://localhost:3000/roomStarted', addK) //Testfase scheiding rooms starten
+			/*$http.post('http://localhost:3000/roomStarted') //Testfase scheiding rooms starten
 			.success(function(roomOn) {
 				$scope.roomOn = roomOn;			
 				console.log("roomOn: " + $scope.roomOn);
@@ -587,7 +615,20 @@ app.controller('roomController', function($scope, $http){
 			})
 			.error(function(err) {
 	            alert(err);
+	        });*/
+
+			$http.post('http://localhost:3000/roomStatusToDB', addK)
+			.success(function(data, status){
+				console.log(data);
+				console.log(status);
+				console.log("statusR in de post: " + statusRoom);
+				console.log("klasG in de post: " + klasG);
+				//$scope.joinOn = true;
+			})
+			.error(function(err) {
+	            alert(err);
 	        });
+
 			}
 
 	}

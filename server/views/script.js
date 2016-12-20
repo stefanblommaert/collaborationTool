@@ -472,7 +472,6 @@ app.controller('roomController', function($scope, $http){
 	$scope.placeAnswer = false; //Wanneer een vraag wordt toegevoegd, ziet de student een blok om een antwoord in te zetten en toe te voegen
 	$scope.showAnswer = false; //Wanneer een antwoord wordt toegevoegd, is dit antwoord te zien onder de vraag 
 
-	$scope.roomOn = false; //Wanneer de 'teacher' een room start, wordt via de server aan deze scope true meegegeven
 	$scope.questionAdded = false;
 
 	var status = false; //
@@ -480,13 +479,6 @@ app.controller('roomController', function($scope, $http){
     $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 
 	var init = function(){ //Wanneer rooms worden opgehaald, gaat deze functie via de server de status van alle onderstaande variabelen ophalen (true of false)
-
-		$http.get('http://localhost:3000/isRoomStarted')
-			.success(function(roomStarted) {
-				$scope.roomOn = roomStarted;			
-				console.log("Room status doorgestuurd, Is room gestart? " + $scope.roomOn);
-
-			})
 
 		$http.get('http://localhost:3000/isQuestionAsked')
 			.success(function(questionAsked) {
@@ -530,13 +522,13 @@ app.controller('roomController', function($scope, $http){
 		var klas = $('#klasIN').val();
 		var leraar = $('#leraarIN').val();
 		var tittel = $('#tittelIN').val();
-		var code = $('#codeIN').val();
+		var code = $('#statusIN').val();
 
 		form = {}
         form ["klas"] = klas;
         form ["leraar"] = leraar;
         form ["tittel"] = tittel;
-        form ["code"] = code;
+        form ["status"] = status;
 
 		$http.post('http://localhost:3000/form', form)
 		.success(function(data, status) {
@@ -545,7 +537,7 @@ app.controller('roomController', function($scope, $http){
 			$('#klasIN').val('');
 			$('#leraarIN').val('');
 			$('#tittelIN').val('');
-			$('#codeIN').val('');
+			$('#statusIN').val('');
 		})
 		.error(function(err) {
 			alert(err);
@@ -582,7 +574,7 @@ app.controller('roomController', function($scope, $http){
 		$scope.question = ""; //Vraag scope resetten als je uit de room gaat
 		$scope.answer1 = "";
 	}
-	$scope.kiesRoom=function(klas, leraar, tittel, code){ //Als er een room gekozen wordt, wordt deze scope aangeroepen en toont de juiste gegevens van de room
+	$scope.kiesRoom=function(klas, leraar, tittel, status, gekozenKlas){ //Als er een room gekozen wordt, wordt deze scope aangeroepen en toont de juiste gegevens van de room
 		//console.log("da ha" + klas);
 		$scope.roomList = false;
 		$scope.joinRoom = false;
@@ -591,43 +583,67 @@ app.controller('roomController', function($scope, $http){
 		$scope.showAnswer = false;
 		$scope.chosenRoom = true;
 		
-		$('#infoRoomK').text("gekozen klas = " + klas);
+		$('#infoRoomK').text("gekozen klas : " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
 		$('#infoRoomT').text("titel : " + tittel);
-		$('#infoRoomC').text("code : " + code);
+		$('#infoRoomC').text("status : " + status);
 
 		$scope.gekozenKlas = klas;
 
-		console.log("RoomOn??: " + $scope.roomOn);
+		statusAr = {}
+        statusAr ["klasR"] = $scope.gekozenKlas;
 
-		if ($scope.roomOn) { //Wanneer de room al gestart was, wordt direct ook de 'join' knop getoont
-			$scope.joinOn = true;
-		}
+		$http.post('http://localhost:3000/roomStatusFromDB', statusAr) //status van de gekozen room aanvragen
+			.success(function(data, status){
+				//console.log(data);
+				//console.log(status);
+				
+			})
+			.success(function(klasobjecten){            
+	            $scope.klasstatus = klasobjecten[0].status;   
+	            //console.log($scope.klasstatus);
+
+	            if ($scope.klasstatus) { //Wanneer status 'true' is, wordt de knop 'join' getoond
+	            	//wanneer klas aan staat
+	            	$scope.joinOn = true;
+	            }
+	            else{
+	            	$scope.joinOn = false;
+	            }
+	        })
+
+			.error(function(err) {
+	            alert(err);
+	        });		
 
 	}
 
 	$scope.roomStart=function(){ //Wanneer op de 'start' knop in de view gedrukt wordt, wordt deze scope aangeroepen
 
-		if ($scope.roomOn) {
+		if ($scope.klasstatus) {
 			//doe niks
+			console.log("klas is al gestart");
 		}
 		else{ //Dit wordt aangeroepen als de room nog niet aanstond
 			var klasG = $scope.gekozenKlas;
-			var status = true;
+			var statusRoom = true;
 
 			addK = {}
 			addK ["klas"] = klasG;
-			addK ["status"] = status;
+			addK ["statusR"] = statusRoom;
 
-			$http.post('http://localhost:3000/roomStarted', addK) //Testfase scheiding rooms starten
-			.success(function(roomOn) {
-				$scope.roomOn = roomOn;			
-				console.log("roomOn: " + $scope.roomOn);
+			$http.post('http://localhost:3000/roomStatusToDB', addK) //status 'true' meegeven aan de server die dit aanpast in de database
+			.success(function(data, status){
+				console.log(data);
+				console.log(status);
 				$scope.joinOn = true;
 			})
 			.error(function(err) {
 	            alert(err);
 	        });
+
+	        //$('#infoRoomC').text("status : " + $scope.klasstatus);
+
 			}
 
 	}
@@ -663,8 +679,8 @@ app.controller('roomController', function($scope, $http){
 		$scope.showQuestion = true;
 		$scope.placeAnswer = true;
 
-		console.log(vraag);
-		console.log(klasG);
+		//console.log(vraag);
+		//console.log(klasG);
 
 		$scope.question = $scope.question1;
 
@@ -675,8 +691,8 @@ app.controller('roomController', function($scope, $http){
 		//Stel de vraag en voeg hem toe aan de database in de juiste room
 		$http.post('http://localhost:3000/addQn', addQ)
 		.success(function(data, status) {
-			console.log(data);
-			console.log(status);	
+			//console.log(data);
+			//console.log(status);	
 
 		})
 		.success(function(questionAdded){ //Post functie naar server om variabele voor questionAdded op true te zetten
@@ -702,8 +718,8 @@ app.controller('roomController', function($scope, $http){
 		$scope.answer1 = "";
         $http.post('http://localhost:3000/addAr', addA)
         .success(function(data, status) {
-            console.log(data);
-            console.log(status);
+            //console.log(data);
+            //console.log(status);
 
         })
         .success(function(answerAdded){ //

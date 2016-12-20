@@ -22,9 +22,9 @@
 						</div>					
 					</div>
 					<div class="form-group">
-						<label  for="label">titel: </label>
+						<label  for="label">status: </label>
 						<div >
-							<input type="text" class="form-control" id="tittelIN" placeholder="Enter title">
+							<input type="text" class="form-control" id="statusIN" placeholder="Enter title">
 						</div>					
 					</div>
 					<div class="form-group">
@@ -49,15 +49,15 @@
 			        <th>klas</th>
 			        <th>leraar</th>
 			        <th>titel</th>
-			        <th>code</th>
+			        <th>status</th>
 			      </tr>
 			    </head>
 			    <body>
-			      <tr ng-repeat-start="x in rooms" ng-click="kiesRoom(x.klas, x.leraar, x.tittel, x.code)">
+			      <tr ng-repeat-start="x in rooms" ng-click="kiesRoom(x.klas, x.leraar, x.tittel, x.status)">
 			        <td>{{x.klas}}</td>
 			        <td>{{x.leraar}}</a></td>
 			        <td>{{x.tittel}}</a></td>
-			        <td>{{x.code}}</a></td>
+			        <td>{{x.status}}</a></td>
 			      </tr>  
 			      <tr ng-repeat-end ></tr>    
 			    </body>

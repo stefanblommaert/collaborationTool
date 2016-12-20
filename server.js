@@ -117,42 +117,45 @@ app.post("/form",function(req,res){ //Nieuwe room aan database toevoegen
 
 });
 
-var roomOn = false;
-var roomStarted = false;
-app.post("/roomStarted", function(req,res){ //Aanroepen als een room gestart wordt
-	
-		roomOn = true;
-		console.log("Room is gestart??" + roomOn);
+app.post("/roomStatusToDB", function(req,res){ //Wanneer een klas wordt gestart, wordt via de script de status true meegegeven en deze wordt aangepast in de database
+		db.db.collection("Rooms", function(err, collection){			
+	        collection.update(
+	            { klas: req.body.klas },
+	            { $set: {status : req.body.statusR} },
+	            { upsert: true}
+	        );
 
+	        console.log("Roomstatus saved to DB");
+	    });
 
-		console.log(req.body.klas + req.body.status); //Testfase scheiding rooms aanzetten
-		db.db.collection("Rooms", function(err, collection){
-	        collection.find({"klas": req.body.klas, "status": req.body.status}).toArray(function(err, data){
-	            console.log(data); // 
-	            klasstatus = data;
-	            //res.json(klasstatus);
-	        })
-	    }); 
+	res.json(true); 
+})
 
+app.post("/roomStatusFromDB", function(req,res){ //Hierin wordt in de database opgezocht welke status de gekozen room heeft en teruggestuurd naar de script
+	db.db.collection("Rooms", function(err, collection){			
+        collection.find({"klas": req.body.klasR}).toArray(function(err, data){
+            //console.log(data);
+            klassen = data;
+            res.json(klassen);
+        });
+        
+	});
+})
 
-		res.json(roomOn);
-	
-});
+app.post("/roomStatusStopToDB", function(req,res){ //Wanneer een klas wordt gestopt, wordt via de script de status false meegegeven en deze wordt aangepast in de database
+		db.db.collection("Rooms", function(err, collection){			
+	        collection.update(
+	            { klas: req.body.klas },
+	            { $set: {status : req.body.statusR} },
+	            { upsert: true}
+	        );
 
-app.get("/isRoomStarted", function(req,res){ //Controle room al reeds gestart was
-	
-		if (roomOn) {
-			roomStarted = true;
-		}
-		else{
-			roomStarted = false;
-		}
+	        console.log("Roomstatus saved to DB (stop)");
+	    });
 
-		//console.log("isRoomStarted: " + roomStarted);
+	res.json(true); 
+})
 
-		res.json(roomStarted);
-	
-});
 
 var questionAsked = false;
 var questionAdded = false;

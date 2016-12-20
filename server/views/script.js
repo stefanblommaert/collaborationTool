@@ -472,6 +472,9 @@ app.controller('roomController', function($scope, $http){
 	$scope.placeAnswer = false; //Wanneer een vraag wordt toegevoegd, ziet de student een blok om een antwoord in te zetten en toe te voegen
 	$scope.showAnswer = false; //Wanneer een antwoord wordt toegevoegd, is dit antwoord te zien onder de vraag 
 
+	$scope.startKnop = false;
+	$scope.stopKnop = false;
+
 	$scope.questionAdded = false;
 
 	var status = false; //
@@ -603,12 +606,16 @@ app.controller('roomController', function($scope, $http){
 	            $scope.klasstatus = klasobjecten[0].status;   
 	            //console.log($scope.klasstatus);
 
-	            if ($scope.klasstatus) { //Wanneer status 'true' is, wordt de knop 'join' getoond
+	            if ($scope.klasstatus) { //Wanneer status 'true' is, wordt de knop 'join' en 'stop' getoond
 	            	//wanneer klas aan staat
 	            	$scope.joinOn = true;
+	            	$scope.startKnop = false;
+					$scope.stopKnop = true;
 	            }
-	            else{
+	            else{ //Wanneer status 'false' is, wordt de knop 'start' getoond
 	            	$scope.joinOn = false;
+	            	$scope.startKnop = true;
+					$scope.stopKnop = false;
 	            }
 	        })
 
@@ -637,15 +644,49 @@ app.controller('roomController', function($scope, $http){
 				console.log(data);
 				console.log(status);
 				$scope.joinOn = true;
+				$scope.startKnop = false;
+				$scope.stopKnop = true;
 			})
 			.error(function(err) {
 	            alert(err);
 	        });
 
-	        //$('#infoRoomC').text("status : " + $scope.klasstatus);
+	        $scope.klasstatus = true;
 
 			}
 
+	}
+
+	$scope.roomStop=function(){ //Wanneer op de 'stop' knop is gedrukt, wordt deze scope aangeroepen
+
+		if ($scope.klasstatus == false) {
+			//doe niks
+			console.log("klas is al gestopt");
+		}
+		else{ //Dit wordt aangeroepen als de room aanstaat en je wilt deze stoppen
+			var klasG = $scope.gekozenKlas;
+			var statusRoom = false;
+
+			addS = {}
+			addS ["klas"] = klasG;
+			addS ["statusR"] = statusRoom;
+
+			$http.post('http://localhost:3000/roomStatusStopToDB', addS) //status 'false' meegeven aan de server die dit aanpast in de database
+			.success(function(data, status){
+				console.log(data);
+				console.log(status);
+				$scope.joinRoom = false;
+				$scope.joinOn = false;
+				$scope.startKnop = true;
+				$scope.stopKnop = false;
+			})
+			.error(function(err) {
+	            alert(err);
+	        });
+
+	        $scope.klasstatus = false;
+
+			}
 	}
 
 	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is

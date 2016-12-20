@@ -450,7 +450,7 @@ app.controller('loginController',
 
     }]);
 
-app.controller('roomController', function($scope, $http){
+app.controller('roomController', function($scope, $http, $interval){
   ///hier wordt popup geswitched !!! ==> 
   	$scope.modalShown = false;
   	$scope.toggleModal = function() {
@@ -481,12 +481,14 @@ app.controller('roomController', function($scope, $http){
 
     $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 
-	var init = function(){ //Wanneer rooms worden opgehaald, gaat deze functie via de server de status van alle onderstaande variabelen ophalen (true of false)
+    //$interval(callAtInterval, 5000);
+
+	$interval(function(){  //Wanneer rooms worden opgehaald, gaat deze functie via de server de status van alle onderstaande variabelen ophalen (true of false)
 
 		$http.get('http://localhost:3000/isQuestionAsked')
 			.success(function(questionAsked) {
 				$scope.questionAdded = questionAsked;			
-				console.log("Is er al een vraag gesteld in de room ? " + $scope.questionAdded);
+				//console.log("Is er al een vraag gesteld in de room ? " + $scope.questionAdded);
 
 			})
 
@@ -494,7 +496,7 @@ app.controller('roomController', function($scope, $http){
 			.success(function(gesteldeVraag1){
 				if ($scope.questionAdded) {
 					$scope.gesteldeVraag = gesteldeVraag1;
-					console.log("De vraag was: " + $scope.gesteldeVraag);
+					//console.log("De vraag was: " + $scope.gesteldeVraag);
 				}
 				else{
 					//Voorlopig nog niks
@@ -504,20 +506,26 @@ app.controller('roomController', function($scope, $http){
 		$http.get('http://localhost:3000/isAnswerAdded')
 			.success(function(answerIsAdded){
 				$scope.answerAdded = answerIsAdded;
-				console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
+				//console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
 			})
 
 		$http.get('http://localhost:3000/sendAnswer')
 			.success(function(gesteldAntwoord1){
 				if ($scope.answerAdded) {
 					$scope.gesteldAntwoord = gesteldAntwoord1;
-					console.log("Het antwoord was: " + $scope.gesteldAntwoord);
+					//console.log("Het antwoord was: " + $scope.gesteldAntwoord);
 				}
 				else{
 					//Voorlopig nog niks
 				}
 			})
-	}
+	}, 2000);
+
+    $interval(function() {
+        if (roomJoined == true) {
+            $scope.roomJoin();
+        }
+    }, 2000);
 
 	// wat er gebeurd als er op de knop wordt gedrukt ==>
 	$scope.submit=function(){
@@ -549,7 +557,7 @@ app.controller('roomController', function($scope, $http){
    	
   };
 
-  var roomArr;
+    var roomArr;
 	$scope.getRooms=function(){ //Deze scope gaat via de server de database nakijken welke rooms er zijn
 		console.log("geeft rooms");
 		$http.get("http://localhost:3000/getRooms")
@@ -566,7 +574,7 @@ app.controller('roomController', function($scope, $http){
 
 	$scope.geefAlleRooms=function(){ //In deze scope worden de opgeladen rooms getoond in de view
 		$scope.getRooms();
-		init(); //Deze functie wordt altijd aangeroepen bij het opnieuw laden van de rooms (controle op rooms die aanstaan)
+		$interval(); //Deze functie wordt altijd aangeroepen bij het opnieuw laden van de rooms (controle op rooms die aanstaan)
 		$scope.chosenRoom = false;
 		$scope.joinRoom = false;
 		$scope.showQuestion = false;
@@ -656,6 +664,10 @@ app.controller('roomController', function($scope, $http){
 			}
 
 	}
+    
+    // variabele houdt bij of er wel gejoined is 
+    var roomJoined = false;
+
 
 	$scope.roomStop=function(){ //Wanneer op de 'stop' knop is gedrukt, wordt deze scope aangeroepen
 
@@ -690,6 +702,10 @@ app.controller('roomController', function($scope, $http){
 	}
 
 	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is
+
+        //console.log("$scope.callAtInterval - Interval occurred");
+        roomJoined = true;
+
 		$scope.joinRoom = true;
 
 		if ($scope.questionAdded) { //Wanneer er een vraag door de teacher was toegevoegd wordt deze getoont in de html bij de student
@@ -711,6 +727,8 @@ app.controller('roomController', function($scope, $http){
 			$scope.showAnswer = false;
 		}
 	}
+    //$intervalFront( function(){ $scope.roomJoin(); }, 2000);
+    //$interval( function(){ $scope.roomJoin(); }, 3000);
 
 	$scope.addQuestion=function(){ //Hierbij wordt een vraag toegevoegd en direct naar de database via de server gestuurd
 		

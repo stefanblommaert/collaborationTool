@@ -62,7 +62,7 @@ app.get("/getClass",function(req,res) { //De juiste room aanroepen om vragen en 
         collection.find({}).toArray(function(err, data){
             //console.log(data); // Het print alle rooms uit in de console die in de collection 'Rooms' staan
             classes = data;
-            //console.log(classes);
+            console.log(classes);
             res.json(classes);
 			console.log('klassen werden gestuurd');
         })
@@ -97,7 +97,7 @@ app.post("/getAr",function(req,res) {
 });
 
 app.post("/form",function(req,res){ //Nieuwe room aan database toevoegen
-	if (req.body.klas == "" || req.body.leraar == "" || req.body.tittel == "" || req.body.status == "") {
+	if (req.body.klas == "" || req.body.leraar == "" || req.body.tittel == "" || req.body.code == "") {
 		res.statusCode = 400;
 		return res.send('error 400: post syntax incorrect');
 	} 
@@ -107,7 +107,7 @@ app.post("/form",function(req,res){ //Nieuwe room aan database toevoegen
 			klas : req.body.klas,
 			leraar : req.body.leraar,
 			tittel : req.body.tittel,
-			status : req.body.status
+			code : req.body.code
 		} )
 		console.log("Room saved to db");
 
@@ -117,45 +117,42 @@ app.post("/form",function(req,res){ //Nieuwe room aan database toevoegen
 
 });
 
-app.post("/roomStatusToDB", function(req,res){ //Wanneer een klas wordt gestart, wordt via de script de status true meegegeven en deze wordt aangepast in de database
-		db.db.collection("Rooms", function(err, collection){			
-	        collection.update(
-	            { klas: req.body.klas },
-	            { $set: {status : req.body.statusR} },
-	            { upsert: true}
-	        );
+var roomOn = false;
+var roomStarted = false;
+app.post("/roomStarted", function(req,res){ //Aanroepen als een room gestart wordt
+	
+		roomOn = true;
+		console.log("Room is gestart??" + roomOn);
 
-	        console.log("Roomstatus saved to DB");
-	    });
 
-	res.json(true); 
-})
+		console.log(req.body.klas + req.body.status); //Testfase scheiding rooms aanzetten
+		db.db.collection("Rooms", function(err, collection){
+	        collection.find({"klas": req.body.klas, "status": req.body.status}).toArray(function(err, data){
+	            console.log(data); // 
+	            klasstatus = data;
+	            //res.json(klasstatus);
+	        })
+	    }); 
 
-app.post("/roomStatusFromDB", function(req,res){ //Hierin wordt in de database opgezocht welke status de gekozen room heeft en teruggestuurd naar de script
-	db.db.collection("Rooms", function(err, collection){			
-        collection.find({"klas": req.body.klasR}).toArray(function(err, data){
-            //console.log(data);
-            klassen = data;
-            res.json(klassen);
-        });
-        
-	});
-})
 
-app.post("/roomStatusStopToDB", function(req,res){ //Wanneer een klas wordt gestopt, wordt via de script de status false meegegeven en deze wordt aangepast in de database
-		db.db.collection("Rooms", function(err, collection){			
-	        collection.update(
-	            { klas: req.body.klas },
-	            { $set: {status : req.body.statusR} },
-	            { upsert: true}
-	        );
+		res.json(roomOn);
+	
+});
 
-	        console.log("Roomstatus saved to DB (stop)");
-	    });
+app.get("/isRoomStarted", function(req,res){ //Controle room al reeds gestart was
+	
+		if (roomOn) {
+			roomStarted = true;
+		}
+		else{
+			roomStarted = false;
+		}
 
-	res.json(true); 
-})
+		//console.log("isRoomStarted: " + roomStarted);
 
+		res.json(roomStarted);
+	
+});
 
 var questionAsked = false;
 var questionAdded = false;

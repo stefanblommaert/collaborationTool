@@ -117,37 +117,21 @@ app.post("/form",function(req,res){ //Nieuwe room aan database toevoegen
 
 });
 
-var roomOn = false;
-var roomStarted = false;
-var statusRoom = "";
-var gekozenKlas = "";
-/*app.post("/roomStarted", function(req,res){ //Aanroepen als een room gestart wordt
-	
-		roomOn = true;
-		console.log("Room is gestart??" + roomOn);
-
-		res.json(roomOn);
-	
-});*/
-
-app.post("/roomStatusToDB", function(req,res){
-	console.log(req.body.klas + req.body.statusR); //Testfase scheiding rooms aanzetten
+app.post("/roomStatusToDB", function(req,res){ //Wanneer een klas wordt gestart, wordt via de script de status true meegegeven en deze wordt aangepast in de database
 		db.db.collection("Rooms", function(err, collection){			
 	        collection.update(
 	            { klas: req.body.klas },
 	            { $set: {status : req.body.statusR} },
 	            { upsert: true}
 	        );
-	        //gekozenKlas = req.body.klas;
-	        //statusRoom = req.body.statusR;
+
 	        console.log("Roomstatus saved to DB");
 	    });
 
 	res.json(true); 
 })
 
-app.post("/roomStatusFromDB", function(req,res){
-	console.log("in post roomStatusFromDB: " + req.body.klasR);
+app.post("/roomStatusFromDB", function(req,res){ //Hierin wordt in de database opgezocht welke status de gekozen room heeft en teruggestuurd naar de script
 	db.db.collection("Rooms", function(err, collection){			
         collection.find({"klas": req.body.klasR}).toArray(function(err, data){
             console.log(data);
@@ -158,20 +142,6 @@ app.post("/roomStatusFromDB", function(req,res){
 	});
 })
 
-/*app.get("/isRoomStarted", function(req,res){ //Controle room al reeds gestart was
-	
-		if (statusRoom) {
-			roomStarted = true;
-		}
-		else{
-			roomStarted = false;
-		}
-
-		console.log("isRoomStarted: " + roomStarted);
-
-		res.json(roomStarted);
-	
-});*/
 
 var questionAsked = false;
 var questionAdded = false;

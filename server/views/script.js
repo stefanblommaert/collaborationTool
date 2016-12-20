@@ -485,16 +485,6 @@ app.controller('roomController', function($scope, $http, $interval){
 
 	$interval(function(){  //Wanneer rooms worden opgehaald, gaat deze functie via de server de status van alle onderstaande variabelen ophalen (true of false)
 
-<<<<<<< HEAD
-		$http.get('http://localhost:3000/isRoomStarted')
-			.success(function(roomStarted) {
-				$scope.roomOn = roomStarted;			
-				//console.log("Room status doorgestuurd, Is room gestart? " + $scope.roomOn);
-
-			})
-
-=======
->>>>>>> b27244d93aeffb9ac25c5cbe3434791386a82ad1
 		$http.get('http://localhost:3000/isQuestionAsked')
 			.success(function(questionAsked) {
 				$scope.questionAdded = questionAsked;			
@@ -674,11 +664,10 @@ app.controller('roomController', function($scope, $http, $interval){
 			}
 
 	}
-<<<<<<< HEAD
     
     // variabele houdt bij of er wel gejoined is 
     var roomJoined = false;
-=======
+
 
 	$scope.roomStop=function(){ //Wanneer op de 'stop' knop is gedrukt, wordt deze scope aangeroepen
 
@@ -712,7 +701,6 @@ app.controller('roomController', function($scope, $http, $interval){
 			}
 	}
 
->>>>>>> b27244d93aeffb9ac25c5cbe3434791386a82ad1
 	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is
 
         //console.log("$scope.callAtInterval - Interval occurred");

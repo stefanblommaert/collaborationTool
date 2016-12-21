@@ -472,12 +472,10 @@ app.controller('roomController', function($scope, $http, $interval){
 	$scope.placeAnswer = false; //Wanneer een vraag wordt toegevoegd, ziet de student een blok om een antwoord in te zetten en toe te voegen
 	$scope.showAnswer = false; //Wanneer een antwoord wordt toegevoegd, is dit antwoord te zien onder de vraag 
 
-	$scope.startKnop = false;
-	$scope.stopKnop = false;
+	$scope.view = false; //Algemene div om de vragen en antwoorden te tonen 
 
-	$scope.questionAdded = false;
-
-	var status = false; //
+	$scope.startKnop = false; //Wanneer op de startknop wordt gedrukt, wordt de 'join' en 'stop' knop getoond (teacher)
+	$scope.stopKnop = false; //Wanneer op de stopknop wordt gedrukt, wordt de view weggehaald met de vragen en antwoorden en de 'start' knop terug getoond (teacher)
 
     $scope.naamStudent = usernameVar; // zorgt voor de aanpgepaste naam bij antwoorden
 
@@ -524,6 +522,9 @@ app.controller('roomController', function($scope, $http, $interval){
     $interval(function() {
         if (roomJoined == true) {
             $scope.roomJoin();
+        }
+        else{
+        	//console.log("roomJoined: " + roomJoined);
         }
     }, 2000);
 
@@ -582,6 +583,8 @@ app.controller('roomController', function($scope, $http, $interval){
 		$scope.showAnswer = false;
 		$scope.roomList = true;
 
+		roomJoined = false;
+
 		$scope.question = ""; //Vraag scope resetten als je uit de room gaat
 		$scope.answer1 = "";
 	}
@@ -593,6 +596,8 @@ app.controller('roomController', function($scope, $http, $interval){
 		$scope.placeAnswer = false;
 		$scope.showAnswer = false;
 		$scope.chosenRoom = true;
+
+		roomJoined = false;
 		
 		$('#infoRoomK').text("gekozen klas : " + klas);
 		$('#infoRoomL').text("leraar : " + leraar);
@@ -660,6 +665,7 @@ app.controller('roomController', function($scope, $http, $interval){
 	        });
 
 	        $scope.klasstatus = true;
+	        roomJoined = false;
 
 			}
 
@@ -687,17 +693,17 @@ app.controller('roomController', function($scope, $http, $interval){
 			.success(function(data, status){
 				console.log(data);
 				console.log(status);
-				$scope.joinRoom = false;
 				$scope.joinOn = false;
 				$scope.startKnop = true;
 				$scope.stopKnop = false;
+				$scope.view = false;
 			})
 			.error(function(err) {
 	            alert(err);
 	        });
 
 	        $scope.klasstatus = false;
-
+	        roomJoined = false;
 			}
 	}
 
@@ -706,6 +712,7 @@ app.controller('roomController', function($scope, $http, $interval){
         //console.log("$scope.callAtInterval - Interval occurred");
         roomJoined = true;
 
+        $scope.view = true;
 		$scope.joinRoom = true;
 
 		if ($scope.questionAdded) { //Wanneer er een vraag door de teacher was toegevoegd wordt deze getoont in de html bij de student

@@ -98,7 +98,7 @@ app.controller('MemberController', function($scope, $http, $window) {
     $scope.geefKlassen=function(){
         console.log("geeft klassen");
         //$window.location.reload();  zorgt voor refresh !!! maar eerst fixe dat login ingelogd blijft bij page refresh !!!!
-        $http.get("http://localhost:3000/getClass")
+        $http.get("http://56c30ec4.ngrok.io/getClass")
         .success(function(classes){
        
         $scope.classes = classes;            
@@ -118,7 +118,7 @@ app.controller('MemberController', function($scope, $http, $window) {
         klasAr ["klas"] = gekozenKlas;
         gekozenKlasGlob = gekozenKlas;
         //console.log("geeft vragen voor" + "" +klasAr);
-        $http.post("http://localhost:3000/getQn", klasAr)
+        $http.post("http://56c30ec4.ngrok.io/getQn", klasAr)
         .success(function(vragen){            
             $scope.vragen= vragen;   
             console.log(vragen);
@@ -135,7 +135,7 @@ app.controller('MemberController', function($scope, $http, $window) {
         vraagAr ["vraag"] = gekozenVraag;
         vraagAr ["klas"] = gekozenKlasGlob;
         //console.log("geeft vragen voor" + "" +klasAr);
-        $http.post("http://localhost:3000/getAr", vraagAr)
+        $http.post("http://56c30ec4.ngrok.io/getAr", vraagAr)
         .success(function(antwoorden){            
             $scope.antwoorden= antwoorden[0].antwoord;   
             console.log(antwoorden[0].antwoord);
@@ -213,7 +213,7 @@ app.factory('AuthenticationService',
              ----------------------------------------------*/
 
              //Ingevulde gegevens van login worden doorgestuurd naar de server
-            $http.post('http://localhost:3000/authenticate', { username: username, password: password, userRole: userRole }) 
+            $http.post('http://56c30ec4.ngrok.io/authenticate', { username: username, password: password, userRole: userRole }) 
                 .success(function (response) {
                     callback(response);
                     console.log('send to server');
@@ -221,6 +221,8 @@ app.factory('AuthenticationService',
                 .error(function(err) {
                 alert(err);
                 });
+
+
         };
   
         service.SetCredentials = function (username, password, userRole) {
@@ -355,7 +357,7 @@ app.controller('loginController',
                         authForm ["password"] = $scope.password;
                         var collectedUserRole; 
                          //push abject naar server
-                        $http.post('http://localhost:3000/checkRoles', authForm)
+                        $http.post('http://56c30ec4.ngrok.io/checkRoles', authForm)
                         .success(function(userVanServer) {
                             collectedUserRole = userVanServer[0].role;
                             console.log(collectedUserRole);
@@ -422,7 +424,7 @@ app.controller('loginController',
             registerForm ["code"] = code;
 
              //push abject naar server
-            $http.post('http://localhost:3000/register', registerForm)
+            $http.post('http://56c30ec4.ngrok.io/register', registerForm)
             .success(function(data, status) {
             console.log(data);
             console.log(status);
@@ -483,14 +485,14 @@ app.controller('roomController', function($scope, $http, $interval){
 
 	$interval(function(){  //Wanneer rooms worden opgehaald, gaat deze functie via de server de status van alle onderstaande variabelen ophalen (true of false)
 
-		$http.get('http://localhost:3000/isQuestionAsked')
+		$http.get('http://56c30ec4.ngrok.io/isQuestionAsked')
 			.success(function(questionAsked) {
 				$scope.questionAdded = questionAsked;			
 				//console.log("Is er al een vraag gesteld in de room ? " + $scope.questionAdded);
 
 			})
 
-		$http.get('http://localhost:3000/sendQuestion')
+		$http.get('http://56c30ec4.ngrok.io/sendQuestion')
 			.success(function(gesteldeVraag1){
 				if ($scope.questionAdded) {
 					$scope.gesteldeVraag = gesteldeVraag1;
@@ -501,13 +503,13 @@ app.controller('roomController', function($scope, $http, $interval){
 				}
 			})
 
-		$http.get('http://localhost:3000/isAnswerAdded')
+		$http.get('http://56c30ec4.ngrok.io/isAnswerAdded')
 			.success(function(answerIsAdded){
 				$scope.answerAdded = answerIsAdded;
 				//console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
 			})
 
-		$http.get('http://localhost:3000/sendAnswer')
+		$http.get('http://56c30ec4.ngrok.io/sendAnswer')
 			.success(function(gesteldAntwoord1){
 				if ($scope.answerAdded) {
 					$scope.gesteldAntwoord = gesteldAntwoord1;
@@ -561,7 +563,7 @@ app.controller('roomController', function($scope, $http, $interval){
     var roomArr;
 	$scope.getRooms=function(){ //Deze scope gaat via de server de database nakijken welke rooms er zijn
 		console.log("geeft rooms");
-		$http.get("http://localhost:3000/getRooms")
+		$http.get("http://56c30ec4.ngrok.io/getRooms")
 		.success(function(rooms){
 			
 			$scope.rooms= rooms;			
@@ -609,7 +611,7 @@ app.controller('roomController', function($scope, $http, $interval){
 		statusAr = {}
         statusAr ["klasR"] = $scope.gekozenKlas;
 
-		$http.post('http://localhost:3000/roomStatusFromDB', statusAr) //status van de gekozen room aanvragen
+		$http.post('http://56c30ec4.ngrok.io/roomStatusFromDB', statusAr) //status van de gekozen room aanvragen
 			.success(function(data, status){
 				//console.log(data);
 				//console.log(status);
@@ -652,7 +654,7 @@ app.controller('roomController', function($scope, $http, $interval){
 			addK ["klas"] = klasG;
 			addK ["statusR"] = statusRoom;
 
-			$http.post('http://localhost:3000/roomStatusToDB', addK) //status 'true' meegeven aan de server die dit aanpast in de database
+			$http.post('http://56c30ec4.ngrok.io/roomStatusToDB', addK) //status 'true' meegeven aan de server die dit aanpast in de database
 			.success(function(data, status){
 				console.log(data);
 				console.log(status);
@@ -689,7 +691,7 @@ app.controller('roomController', function($scope, $http, $interval){
 			addS ["klas"] = klasG;
 			addS ["statusR"] = statusRoom;
 
-			$http.post('http://localhost:3000/roomStatusStopToDB', addS) //status 'false' meegeven aan de server die dit aanpast in de database
+			$http.post('http://56c30ec4.ngrok.io/roomStatusStopToDB', addS) //status 'false' meegeven aan de server die dit aanpast in de database
 			.success(function(data, status){
 				console.log(data);
 				console.log(status);
@@ -782,7 +784,7 @@ app.controller('roomController', function($scope, $http, $interval){
         addA = {}
         addA ["antwoord"] = $scope.answer;
 		$scope.answer1 = "";
-        $http.post('http://localhost:3000/addAr', addA)
+        $http.post('http://56c30ec4.ngrok.io/addAr', addA)
         .success(function(data, status) {
             //console.log(data);
             //console.log(status);
@@ -800,7 +802,7 @@ app.controller('roomController', function($scope, $http, $interval){
 
     $scope.stopQuestion=function(){ //Vraagstelling stoppen
         //console.log(stelling);
-        $http.post('http://localhost:3000/questionAdd')
+        $http.post('http://56c30ec4.ngrok.io/questionAdd')
         .success(function(data, status) {
             /*console.log(data);
             console.log(status);

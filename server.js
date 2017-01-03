@@ -18,7 +18,7 @@ app.options('*', cors());
 app.use(bodyparser.json());
 
 app.use(function(req, res, next) { //Zou error moeten weghalen om dingen van de server te halen
-  res.setHeader("Access-Control-Allow-Origin", 'http://56c30ec4.ngrok.io');
+  res.setHeader("Access-Control-Allow-Origin", '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST,GET,OPTIONS,PUT,DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-requested-With, Content-Type, Accept, Authorization');
 

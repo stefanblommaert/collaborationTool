@@ -81,12 +81,10 @@ app.directive('modalDialog', function() { //Deze directive is voor het pop-up sc
 
 
 app.controller('NavController', function($scope) {
-	$scope.message = 'Everyone come and see how good I look!';
+	$scope.message = 'Welcome to collaboration-tool webpage app for students and teachers. This webapp is designed to being used so that teachers can ask questions and get uninfluenced opinions of all the students.';
 });
 
 app.controller('MemberController', function($scope, $http, $window) {
-	$scope.message = 'Everyone come and see how good I look!';
-	//console.log("teacherVar: " + teacherVar);
 
 	if (teacherVar == true) { //Wanneer bij de userrole blok teacher is ingevult, wordt 'teacher' scope op true gezet
         $scope.teacher = true;
@@ -440,7 +438,7 @@ app.controller('loginController',
             registerForm ["role"] = registerRole;
             registerForm ["code"] = code;
 
-             //push abject naar server
+             //push object naar server
             $http.post('http://8bec0120.ngrok.io/register', registerForm)
             .success(function(data, status) {
             console.log(data);
@@ -457,7 +455,7 @@ app.controller('loginController',
 
         }); 
         }
-        //radiobuttuns bijhouden
+        //radiobuttons bijhouden
         $scope.teacherChecked = function(value) {
             registerRole=value;
             $scope.teacherCode=true;
@@ -833,7 +831,7 @@ app.controller('roomController', function($scope, $http, $interval){
 
         });
 
-        $http.get('http://8bec0120.ngrok.io/clearBoxes')
+        $http.get('http://8bec0120.ngrok.io/clearBoxes') //Frontend vraag en antwoord blokken resetten
         .success(function(data, status){
 	        //$scope.answerAdded = answerIsAdded;
 	        //console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
@@ -842,9 +840,4 @@ app.controller('roomController', function($scope, $http, $interval){
         });
         
     }
-});
-
-app.controller('FaqController', function($scope){
-	$scope.message = 'Ask any questions';
-
 });

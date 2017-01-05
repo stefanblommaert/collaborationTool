@@ -245,7 +245,7 @@ app.post("/questionAdd",function(req,res){ //Array wordt gereset om nieuwe vraag
 		res.json(true);
 });
 
-app.get("/clearboxes", function(req,res){  //Gesteld antwoord meegeven aan de script
+app.get("/clearboxes", function(req,res){  //Blokken vraag en antwoord resetten
 	console.log("clearboxen");
 	questionAdded = false;
 	answerAdded = false;

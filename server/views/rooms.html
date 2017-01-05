@@ -22,17 +22,17 @@
 						</div>					
 					</div>
 					<div class="form-group">
-						<label  for="label">status: </label>
+						<label  for="label">title: </label>
 						<div >
 							<input type="text" class="form-control" id="statusIN" placeholder="Enter title">
 						</div>					
 					</div>
-					<div class="form-group">
+					<!--<div class="form-group">
 						<label  for="label">code: </label>
 						<div >
 							<input type="text" class="form-control" id="codeIN" placeholder="Enter code">
 						</div>					
-					</div>
+					</div>-->
 					<div class="form-group">
 						<div >
 							<button type="submit" class="btn btn-default" ng-click="submit()">add</button>
@@ -49,7 +49,7 @@
 			        <th>klas</th>
 			        <th>leraar</th>
 			        <th>titel</th>
-			        <th>status</th>
+			        <!--<th>status</th>-->
 			      </tr>
 			    </head>
 			    <body>
@@ -57,7 +57,7 @@
 			        <td>{{x.klas}}</td>
 			        <td>{{x.leraar}}</a></td>
 			        <td>{{x.tittel}}</a></td>
-			        <td>{{x.status}}</a></td>
+			        <!--<td>{{x.status}}</a></td>-->
 			      </tr>  
 			      <tr ng-repeat-end ></tr>    
 			    </body>
@@ -67,7 +67,7 @@
 			<p id="infoRoomK"></p>
 			<p id="infoRoomL"></p>
 			<p id="infoRoomT"></p>
-			<p id="infoRoomC"></p>
+			<!--<p id="infoRoomC"></p>-->
 
 			<div ng-show="teacher">
 				<p><button class="btn btn-default" ng-click="roomStop()" ng-show="stopKnop">Stop</button>

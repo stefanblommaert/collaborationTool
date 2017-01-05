@@ -172,18 +172,28 @@ var answerIsAdded = false;
 var gesteldAntwoord = "";
 var gesteldAntwoord1 = "";
 
+var usernameAddQ = "";
+var usernameAddQ1 = "";
+var usernameAddA = "";
+var usernameAddA1 = "";
+
 
 	stelling = {}
     stelling ["klas"] ="";
     stelling ["vraag"] = "";
     stelling ["antwoord"] = []; 
+    stelling ["usernameAddQ"] = "";
+    stelling ["usernameAddA"] = "";
 
 app.post("/addQn",function(req,res){ //Vraagstelling aan database toevoegen
 	questionAdded = true;
 
 	stelling ["klas"] = req.body.klas;
     stelling ["vraag"] = req.body.vraag;
+    stelling ["usernameAddQ"] = req.body.usernameAddQ;
+
     gesteldeVraag = req.body.vraag;
+    usernameAddQ = req.body.usernameAddQ;
 
     res.json(questionAdded);
 });
@@ -204,11 +214,19 @@ app.get("/sendQuestion", function(req,res){ //Gestelde vraag meegeven aan de scr
 	res.json(gesteldeVraag1);
 })
 
+app.get("/sendUsernameAddQ", function(req,res){
+	usernameAddQ1 = usernameAddQ;
+	res.json(usernameAddQ1);
+})
+
 app.post("/addAr",function(req,res){ //Antwoord op vraag aan database toevoegen
 	answerAdded = true;
 
 	stelling ["antwoord"].push(req.body.antwoord);
+	stelling ["usernameAddA"] = req.body.usernameAddA;
+
 	gesteldAntwoord = req.body.antwoord;
+	usernameAddA = req.body.usernameAddA;
 
 	res.json(answerAdded);
 });
@@ -227,6 +245,11 @@ app.get("/isAnswerAdded",function(req,res){ //In init in de script wordt control
 app.get("/sendAnswer", function(req,res){  //Gesteld antwoord meegeven aan de script
 	gesteldAntwoord1 = gesteldAntwoord;
 	res.json(gesteldAntwoord1);
+})
+
+app.get("/sendUsernameAddA", function(req,res){
+	usernameAddA1 = usernameAddA;
+	res.json(usernameAddA1);
 })
 
 app.post("/questionAdd",function(req,res){ //Array wordt gereset om nieuwe vraagstelling met andere antwoorden op de database te kunnen zetten

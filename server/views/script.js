@@ -510,6 +510,11 @@ app.controller('roomController', function($scope, $http, $interval){
 				if ($scope.questionAdded) {
 					$scope.gesteldeVraag = gesteldeVraag1;
 					//console.log("De vraag was: " + $scope.gesteldeVraag);
+
+					$http.get('http://8bec0120.ngrok.io/sendUsernameAddQ')
+					.success(function(usernameAddQ1){
+						$scope.usernameAddQuestion = usernameAddQ1;
+					})
 				}
 				else{
 					//Voorlopig nog niks
@@ -527,6 +532,11 @@ app.controller('roomController', function($scope, $http, $interval){
 				if ($scope.answerAdded) {
 					$scope.gesteldAntwoord = gesteldAntwoord1;
 					//console.log("Het antwoord was: " + $scope.gesteldAntwoord);
+
+					$http.get('http://8bec0120.ngrok.io/sendUsernameAddA')
+					.success(function(usernameAddA1){
+						$scope.usernameAddAnswer = usernameAddA1;
+					})
 				}
 				else{
 					//Voorlopig nog niks
@@ -536,9 +546,6 @@ app.controller('roomController', function($scope, $http, $interval){
 
     $interval(function() {
         if (roomJoined == true) {
-        	$scope.naamStudent = usernameStudent; // zorgt voor de aanpgepaste naam bij antwoorden
-    		$scope.naamTeacher = usernameTeacher;
-    		console.log("$scope.naamTeacher: " + $scope.naamTeacher);
             $scope.roomJoin();
         }
         else{
@@ -560,7 +567,7 @@ app.controller('roomController', function($scope, $http, $interval){
         form ["tittel"] = tittel;
         form ["status"] = status;
 
-		$http.post('http://localhost:3000/form', form)
+		$http.post('http://8bec0120.ngrok.io/form', form)
 		.success(function(data, status) {
 			console.log(data);
 			console.log(status);
@@ -737,6 +744,8 @@ app.controller('roomController', function($scope, $http, $interval){
 			$scope.showQuestion = true;
 			$scope.placeAnswer = true;
 			$scope.question = $scope.gesteldeVraag;
+			$scope.naamTeacher = $scope.usernameAddQuestion;
+
 		}
 		else{
 			$scope.showQuestion = false;
@@ -747,6 +756,7 @@ app.controller('roomController', function($scope, $http, $interval){
 		if ($scope.answerAdded) { //Wanneer de student een antwoord toevoegt op de vraag, wordt deze zichtbaar voor de leraar
 			$scope.showAnswer = true;
 			$scope.answer = $scope.gesteldAntwoord;
+			$scope.naamStudent = $scope.usernameAddAnswer;
 		}
 		else{
 			$scope.showAnswer = false;
@@ -771,9 +781,10 @@ app.controller('roomController', function($scope, $http, $interval){
         addQ = {}
 		addQ ["klas"] = klasG;
         addQ ["vraag"] = vraag;
+        addQ ["usernameAddQ"] = usernameTeacher;
 
 		//Stel de vraag en voeg hem toe aan de database in de juiste room
-		$http.post('http://localhost:3000/addQn', addQ)
+		$http.post('http://8bec0120.ngrok.io/addQn', addQ)
 		.success(function(data, status) {
 			//console.log(data);
 			//console.log(status);	
@@ -799,7 +810,8 @@ app.controller('roomController', function($scope, $http, $interval){
 		$scope.answer = $scope.answer1;
         addA = {}
         addA ["antwoord"] = $scope.answer;
-		$scope.answer1 = "";
+        addA ["usernameAddA"] = usernameStudent;
+
         $http.post('http://8bec0120.ngrok.io/addAr', addA)
         .success(function(data, status) {
             //console.log(data);
@@ -814,6 +826,8 @@ app.controller('roomController', function($scope, $http, $interval){
             //alert(err);
 
         }); 
+
+        $scope.answer1 = "";
 	}
 
     $scope.stopQuestion=function(){ //Vraagstelling stoppen

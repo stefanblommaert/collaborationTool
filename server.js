@@ -172,6 +172,7 @@ var answerIsAdded = false;
 var gesteldAntwoord = "";
 var gesteldAntwoord1 = "";
 
+
 	stelling = {}
     stelling ["klas"] ="";
     stelling ["vraag"] = "";
@@ -244,6 +245,11 @@ app.post("/questionAdd",function(req,res){ //Array wordt gereset om nieuwe vraag
 		res.json(true);
 });
 
+app.get("/clearboxes", function(req,res){  //Gesteld antwoord meegeven aan de script
+	console.log("clearboxen");
+	questionAdded = false;
+	answerAdded = false;
+})
 
 app.post("/register", function(req,res){ //Save nieuwe users op de database
 	if (req.body.username == "" || req.body.password == "" || req.body.role == "") {

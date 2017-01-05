@@ -809,18 +809,20 @@ app.controller('roomController', function($scope, $http, $interval){
             stelling ["klas"] ="";
             stelling ["vraag"] = "";
             stelling ["antwoord"] = [];*/
-            $http.get('http://localhost:3000/clearBoxes')
-            .success(function(data, status){
-                //$scope.answerAdded = answerIsAdded;
-                //console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
-                $scope.answer = "";
-                $scope.question="";
-            })
+            
             
         })
         .error(function(err) {
             //alert(err);
 
+        });
+
+        $http.get('http://localhost:3000/clearBoxes')
+            .success(function(data, status){
+                //$scope.answerAdded = answerIsAdded;
+                //console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
+                $scope.answer = "";
+                $scope.question="";
         });
         
     }

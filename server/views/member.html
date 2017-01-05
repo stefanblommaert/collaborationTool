@@ -1,5 +1,9 @@
 <div class="jumbotron text-center">
 	<h1>Member Page</h1>
+	<p>Username: {{ usernameCombined }}</p>
+</div>
+
+<div class="jumbotron text-center" ng-show="teacher">
 	<p>{{ message }}</p>
 	<button class="btn btn-default" ng-click='geefKlassen()' ng-show="geefKlasBtn">mijn klassen</button>
 	<button class="btn btn-default" ng-click='terug()' ng-show="terugBtn">naar mijn klassen</button>

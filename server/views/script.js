@@ -86,6 +86,18 @@ app.controller('NavController', function($scope) {
 
 app.controller('MemberController', function($scope, $http, $window) {
 	$scope.message = 'Everyone come and see how good I look!';
+	//console.log("teacherVar: " + teacherVar);
+
+	if (teacherVar == true) { //Wanneer bij de userrole blok teacher is ingevult, wordt 'teacher' scope op true gezet
+        $scope.teacher = true;
+        $scope.student = false;
+        $scope.usernameCombined = usernameTeacher;
+    }
+    else if (studentVar == true) { //Wanneer bij de userrole blok student is ingevult, wordt 'student' scope op true gezet
+        $scope.teacher = false;
+        $scope.student = true;
+        $scope.usernameCombined = usernameStudent;
+    }
 
     //nog clearen op de juiste momenten !! -->   (houdt bij op welke klas is gedrukt)
     var gekozenKlasGlob = "";
@@ -821,7 +833,7 @@ app.controller('roomController', function($scope, $http, $interval){
 
         });
 
-        $http.get('http://localhost:3000/clearBoxes')
+        $http.get('http://8bec0120.ngrok.io/clearBoxes')
         .success(function(data, status){
 	        //$scope.answerAdded = answerIsAdded;
 	        //console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);

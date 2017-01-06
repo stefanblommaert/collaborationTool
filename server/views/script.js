@@ -507,17 +507,23 @@ app.controller('roomController', function($scope, $http, $interval){
 
 		$http.get('http://8bec0120.ngrok.io/sendQuestion')
 			.success(function(gesteldeVraag1){
-				if ($scope.questionAdded) {
-					$scope.gesteldeVraag = gesteldeVraag1;
-					//console.log("De vraag was: " + $scope.gesteldeVraag);
+				$scope.gesteldeVraag = gesteldeVraag1;
+				
+			})
 
-					$http.get('http://8bec0120.ngrok.io/sendUsernameAddQ')
-					.success(function(usernameAddQ1){
-						$scope.usernameAddQuestion = usernameAddQ1;
-					})
+		$http.get('http://8bec0120.ngrok.io/sendUsernameAddQ')
+			.success(function(usernameAddQ1){
+				if ($scope.questionAdded) { //Wanneer er een vraag door de teacher was toegevoegd wordt deze getoont in de html bij de student
+					$scope.usernameAddQuestion = usernameAddQ1;
+
+					$scope.showQuestion = true;
+					$scope.placeAnswer = true;
+					$scope.question = $scope.gesteldeVraag;
+					$scope.naamTeacher = $scope.usernameAddQuestion;
 				}
 				else{
-					//Voorlopig nog niks
+					$scope.showQuestion = false;
+					$scope.placeAnswer = false;
 				}
 			})
 
@@ -529,19 +535,24 @@ app.controller('roomController', function($scope, $http, $interval){
 
 		$http.get('http://8bec0120.ngrok.io/sendAnswer')
 			.success(function(gesteldAntwoord1){
-				if ($scope.answerAdded) {
-					$scope.gesteldAntwoord = gesteldAntwoord1;
-					//console.log("Het antwoord was: " + $scope.gesteldAntwoord);
+				$scope.gesteldAntwoord = gesteldAntwoord1;
+				
+			})
 
-					$http.get('http://8bec0120.ngrok.io/sendUsernameAddA')
-					.success(function(usernameAddA1){
-						$scope.usernameAddAnswer = usernameAddA1;
-					})
+		$http.get('http://8bec0120.ngrok.io/sendUsernameAddA')
+			.success(function(usernameAddA1){
+				if ($scope.answerAdded) { //Wanneer de student een antwoord toevoegt op de vraag, wordt deze zichtbaar voor de leraar
+					$scope.usernameAddAnswer = usernameAddA1;
+
+					$scope.showAnswer = true;
+					$scope.answer = $scope.gesteldAntwoord;
+					$scope.naamStudent = $scope.usernameAddAnswer;
 				}
 				else{
-					//Voorlopig nog niks
+					$scope.showAnswer = false;
 				}
 			})
+
 	}, 2000);
 
     $interval(function() {
@@ -734,36 +745,11 @@ app.controller('roomController', function($scope, $http, $interval){
 
 	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is
 
-        //console.log("$scope.callAtInterval - Interval occurred");
         roomJoined = true;
 
         $scope.view = true;
 		$scope.joinRoom = true;
-
-		if ($scope.questionAdded) { //Wanneer er een vraag door de teacher was toegevoegd wordt deze getoont in de html bij de student
-			$scope.showQuestion = true;
-			$scope.placeAnswer = true;
-			$scope.question = $scope.gesteldeVraag;
-			$scope.naamTeacher = $scope.usernameAddQuestion;
-
-		}
-		else{
-			$scope.showQuestion = false;
-			$scope.placeAnswer = false;
-		}
-
-
-		if ($scope.answerAdded) { //Wanneer de student een antwoord toevoegt op de vraag, wordt deze zichtbaar voor de leraar
-			$scope.showAnswer = true;
-			$scope.answer = $scope.gesteldAntwoord;
-			$scope.naamStudent = $scope.usernameAddAnswer;
-		}
-		else{
-			$scope.showAnswer = false;
-		}
 	}
-    //$intervalFront( function(){ $scope.roomJoin(); }, 2000);
-    //$interval( function(){ $scope.roomJoin(); }, 3000);
 
 	$scope.addQuestion=function(){ //Hierbij wordt een vraag toegevoegd en direct naar de database via de server gestuurd
 		

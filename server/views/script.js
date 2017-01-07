@@ -659,7 +659,7 @@ app.controller('roomController', function($scope, $http, $interval){
 			})
 			.success(function(klasobjecten){            
 	            $scope.klasstatus = klasobjecten[0].status;   
-	            //console.log($scope.klasstatus);
+	            console.log("dit is de klasstatus" + $scope.klasstatus);
 
 	            if ($scope.klasstatus) { //Wanneer status 'true' is, wordt de knop 'join' en 'stop' getoond
 	            	//wanneer klas aan staat

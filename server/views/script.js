@@ -469,6 +469,8 @@ app.controller('loginController',
 
 app.controller('roomController', function($scope, $http, $interval){
   ///hier wordt popup geswitched !!! ==> 
+
+    var vragenEnAntwoordenVis = false;  // zorgt ervoor dat wnr er teruggegaan wordt naar alle rooms men niet alles blijft zien
   	$scope.modalShown = false;
   	$scope.toggleModal = function() {
         $scope.modalShown = !$scope.modalShown;
@@ -515,9 +517,10 @@ app.controller('roomController', function($scope, $http, $interval){
 			.success(function(usernameAddQ1){
 				if ($scope.questionAdded) { //Wanneer er een vraag door de teacher was toegevoegd wordt deze getoont in de html bij de student
 					$scope.usernameAddQuestion = usernameAddQ1;
-
-					$scope.showQuestion = true;
-					$scope.placeAnswer = true;
+                    if (vragenEnAntwoordenVis == true) {
+                        $scope.showQuestion = true;
+                        $scope.placeAnswer = true;
+                    }					
 					$scope.question = $scope.gesteldeVraag;
 					$scope.naamTeacher = $scope.usernameAddQuestion;
 				}
@@ -543,8 +546,9 @@ app.controller('roomController', function($scope, $http, $interval){
 			.success(function(usernameAddA1){
 				if ($scope.answerAdded) { //Wanneer de student een antwoord toevoegt op de vraag, wordt deze zichtbaar voor de leraar
 					$scope.usernameAddAnswer = usernameAddA1;
-
-					$scope.showAnswer = true;
+                    if (vragenEnAntwoordenVis == true) {
+                        $scope.showAnswer = true;
+                    }					
 					$scope.answer = $scope.gesteldAntwoord;
 					$scope.naamStudent = $scope.usernameAddAnswer;
 				}
@@ -610,6 +614,7 @@ app.controller('roomController', function($scope, $http, $interval){
 	}
 
 	$scope.geefAlleRooms=function(){ //In deze scope worden de opgeladen rooms getoond in de view
+        vragenEnAntwoordenVis = false;
 		$scope.getRooms();
 		$interval(); //Deze functie wordt altijd aangeroepen bij het opnieuw laden van de rooms (controle op rooms die aanstaan)
 		$scope.chosenRoom = false;
@@ -626,6 +631,7 @@ app.controller('roomController', function($scope, $http, $interval){
 	}
 	$scope.kiesRoom=function(klas, leraar, tittel, status, gekozenKlas){ //Als er een room gekozen wordt, wordt deze scope aangeroepen en toont de juiste gegevens van de room
 		//console.log("da ha" + klas);
+        vragenEnAntwoordenVis = true;
 		$scope.roomList = false;
 		$scope.joinRoom = false;
 		$scope.showQuestion = false;

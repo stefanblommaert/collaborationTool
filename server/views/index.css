@@ -40,3 +40,6 @@
   font-weight: bold;
   font-family: 'arial', 'sans-serif';
 }
+#stopStelBtn {
+  margin-left: -3.5em;
+}

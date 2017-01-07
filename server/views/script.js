@@ -348,6 +348,9 @@ app.factory('Base64', function () {
 
 var usernameTeacher;
 var usernameStudent;
+
+var collectedUserRole;
+var collectedUsername;
 app.controller('loginController',
     ['$scope', '$rootScope', '$location', 'AuthenticationService', '$state', 'Authorization', '$http',
     function($scope, $rootScope, $location, AuthenticationService, $state, Authorization, $http) {
@@ -366,8 +369,7 @@ app.controller('loginController',
                         authForm = {}
                         authForm ["username"] = $scope.username;
                         authForm ["password"] = $scope.password;
-                        var collectedUserRole; 
-                        var collectedUsername;
+                         
                          //push abject naar server
                         $http.post('http://8bec0120.ngrok.io/checkRoles', authForm)
                         .success(function(userVanServer) {
@@ -541,12 +543,16 @@ app.controller('roomController', function($scope, $http, $interval){
 
 		$http.get('http://8bec0120.ngrok.io/sendUsernameAddA')
 			.success(function(usernameAddA1){
-				if ($scope.answerAdded) { //Wanneer de student een antwoord toevoegt op de vraag, wordt deze zichtbaar voor de leraar
+				if ($scope.answerAdded == true && collectedUserRole == "teacher") { //Wanneer de student een antwoord toevoegt op de vraag, wordt deze zichtbaar voor de leraar
 					$scope.usernameAddAnswer = usernameAddA1;
 
 					$scope.showAnswer = true;
 					$scope.answer = $scope.gesteldAntwoord;
 					$scope.naamStudent = $scope.usernameAddAnswer;
+				}
+				else if ($scope.answerAdded == true && collectedUserRole == "student") {
+					$scope.showAnswer = true;
+					$scope.naamStudent = collectedUsername;
 				}
 				else{
 					$scope.showAnswer = false;

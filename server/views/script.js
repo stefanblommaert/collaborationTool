@@ -674,7 +674,7 @@ app.controller('roomController', function($scope, $http, $interval){
 	            	//wanneer klas aan staat
 	            	$scope.joinOn = true;
 	            	$scope.startKnop = false;
-					$scope.stopKnop = true;
+					$scope.stopKnop = false;
 	            }
 	            else{ //Wanneer status 'false' is, wordt de knop 'start' getoond
 	            	$scope.joinOn = false;
@@ -760,7 +760,8 @@ app.controller('roomController', function($scope, $http, $interval){
 	}
 
 	$scope.roomJoin=function(){ //Deze scope wordt aangeroepen als de 'join' knop ingedrukt is
-
+        $scope.stopKnop = false;
+        $scope.joinOn = false;
         roomJoined = true;
 
         $scope.view = true;
@@ -854,6 +855,6 @@ app.controller('roomController', function($scope, $http, $interval){
 	        $scope.answer = "";
 	        $scope.question="";
         });
-        
+        $scope.roomStop();
     }
 });

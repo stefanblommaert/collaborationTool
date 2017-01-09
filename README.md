@@ -9,14 +9,17 @@ Een extra doel zou in onze ogen een opvolg systeem kunnen zijn voor leraars. Wat
 Hoe project lokaal op te starten:
 
 - Node server opstarten
+
 In de command line vul je het commando 'node server.js' in. Nu kan je in de browser naar http://localhost:3000 gaan om webapp te zien.
 Om het lokaal goed te laten werken moet je zien dat alle http post en get beginnen met http://localhost:3000. (Voorbeeld: $http.post('http://localhost:3000/checkRoles')
 
 - MongoDB connectie
+
 Dit gebeurd in de server.js file, de link ervan is: 'mongodb://administrator:administrator@ds048719.mlab.com:48719/tool'. Hierin is administrator de username en het paswoord voor op de database te geraken.
 
 - Paswoorden
-Er zijn accounts op de database die voor de leraar zijn voorzien en voor studenten. Als je via register een nieuw leraar account wilt aanmaken moet er in het veiligheidscode vak '1234' komen en dan is je account aanmaking een success.
+
+Er zijn accounts op de database die voor de leraar zijn voorzien en voor studenten. Als je via register een nieuw leraar account wilt aanmaken moet er in het veiligheidscode vak '1234' komen en dan is de aanmaking van je account een succes.
 
 Voor remote access:
 

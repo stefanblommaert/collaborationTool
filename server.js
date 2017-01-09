@@ -272,6 +272,7 @@ app.get("/clearboxes", function(req,res){  //Blokken vraag en antwoord resetten
 	console.log("clearboxen");
 	questionAdded = false;
 	answerAdded = false;
+	res.json(true);
 })
 
 app.post("/register", function(req,res){ //Save nieuwe users op de database

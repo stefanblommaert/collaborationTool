@@ -852,6 +852,7 @@ app.controller('roomController', function($scope, $http, $interval){
         .success(function(data, status){
 	        //$scope.answerAdded = answerIsAdded;
 	        //console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
+            console.log("clearBoxes");
 	        $scope.answer = "";
 	        $scope.question="";
         });

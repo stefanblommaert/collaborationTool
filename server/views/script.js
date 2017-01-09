@@ -604,6 +604,7 @@ app.controller('roomController', function($scope, $http, $interval){
 			alert(err);
 
 		});	
+		$scope.getRooms();
    	
   };
 

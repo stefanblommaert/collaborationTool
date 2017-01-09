@@ -43,3 +43,11 @@
 #stopStelBtn {
   margin-left: -3.5em;
 }
+#voegVraagToe{
+  display: inline-block;
+  vertical-align: top;
+}
+#antwoord{
+  display: inline-block;
+  vertical-align: top;
+}

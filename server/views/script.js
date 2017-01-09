@@ -834,7 +834,7 @@ app.controller('roomController', function($scope, $http, $interval){
 	}
 
     $scope.stopQuestion=function(){ //Vraagstelling stoppen
-        //console.log(stelling);
+        console.log("stopQtn");
         $http.post('http://localhost:3000/questionAdd')
         .success(function(data, status) {
             /*console.log(data);
@@ -852,6 +852,7 @@ app.controller('roomController', function($scope, $http, $interval){
         .success(function(data, status){
 	        //$scope.answerAdded = answerIsAdded;
 	        //console.log("Is er een antwoord gegeven op een vraag ? " + $scope.answerAdded);
+            console.log("clearBoxes");
 	        $scope.answer = "";
 	        $scope.question="";
         });
